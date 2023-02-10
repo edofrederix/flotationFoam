@@ -1,0 +1,146 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+actions
+(
+    {
+        name    pump;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+
+        sourceInfo
+        {
+            boxes
+            (
+                (1.8275 0.6575 -10) (10 1.5975 10)
+            );
+        }
+    }
+
+    {
+        name    pump;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+
+        sourceInfo
+        {
+            set pump;
+        }
+    }
+
+    {
+        name    remover;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+
+        sourceInfo
+        {
+            boxes
+            (
+                (1.8275 0.1875 -10) (10 2.0675 10)
+            );
+        }
+    }
+
+    {
+        name    remover;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+
+        sourceInfo
+        {
+            set remover;
+        }
+    }
+
+    {
+        name    hex;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+
+        sourceInfo
+        {
+            boxes
+            (
+                (1.8275 -10 -10) (10 10 10)
+            );
+        }
+    }
+
+    {
+        name    hex;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+
+        sourceInfo
+        {
+            set hex;
+        }
+    }
+
+    {
+        name    vessel;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+
+        sourceInfo
+        {
+            boxes
+            (
+                (0 -10 -10) (1.1275 10 10)
+            );
+        }
+    }
+
+    {
+        name    vessel;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+
+        sourceInfo
+        {
+            set vessel;
+        }
+    }
+
+    {
+        name    frother;
+        type    cellSet;
+        action  new;
+        source  boxToCell;
+
+        sourceInfo
+        {
+            boxes
+            (
+                (1.1275 2.0675 -10) (10 10 10)
+                (1.8275 0.1875 -10) (10 10 10)
+            );
+        }
+    }
+
+    {
+        name    frother;
+        type    cellZoneSet;
+        action  new;
+        source  setToCellZone;
+
+        sourceInfo
+        {
+            set frother;
+        }
+    }
+);

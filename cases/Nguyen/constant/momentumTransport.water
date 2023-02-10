@@ -1,0 +1,23 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransport.water;
+}
+
+simulationType  LES;
+
+LES
+{
+    model    NicenoKEqn;
+
+    turbulence      on;
+    printCoeffs     on;
+
+    delta           cubeRootVol;
+
+    cubeRootVolCoeffs
+    {
+    }
+}

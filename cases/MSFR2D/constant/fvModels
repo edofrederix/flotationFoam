@@ -1,0 +1,136 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+
+flotation
+{
+    type    flotation;
+}
+
+remover
+{
+    type            semiImplicitSource;
+
+    selectionMode   cellZone;
+    cellZone        remover;
+
+    volumeMode      specific;
+
+    sources
+    {
+        thermo:rho.helium
+        {
+            explicit    0;
+            implicit   -0.5;
+        }
+    }
+}
+
+frother
+{
+    type            semiImplicitSource;
+
+    selectionMode   cellZone;
+    cellZone        frother;
+
+    volumeMode      specific;
+
+    sources
+    {
+//        #include "NcSources"
+    }
+}
+
+hex
+{
+    type            semiImplicitSource;
+
+    selectionMode   cellZone;
+    cellZone        hex;
+
+    volumeMode      specific;
+
+    // e(t->infty) = -Cex/Cim, with Cex > 0 the explicit coefficient and Cim < 0
+    // the implicit coefficient. Using e = Cv*T the temperature can be imposed.
+    // The inlet temperature is 920 K and Cv is about 1080.
+
+    sources
+    {
+        e.salt
+        {
+            explicit    3.97e10;
+            implicit   -4e4;
+        }
+    }
+}
+
+heatSource
+{
+    type            coded;
+
+    selectionMode   all;
+
+    field           e.salt;
+
+    codeAddAlphaRhoSup
+    #{
+        if (!mesh().foundObject<volScalarField>("promptHeatSource"))
+        {
+            // Read prompt and decay heat sources from the 0 directory
+
+            volScalarField * prompt
+            (
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        "promptHeatSource",
+                        "0",
+                        mesh(),
+                        IOobject::MUST_READ,
+                        IOobject::AUTO_WRITE
+                    ),
+                    mesh()
+                )
+            );
+
+            volScalarField * decay
+            (
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        "decayHeatSource",
+                        "0",
+                        mesh(),
+                        IOobject::MUST_READ,
+                        IOobject::AUTO_WRITE
+                    ),
+                    mesh()
+                )
+            );
+
+            // Store them
+
+            mesh().objectRegistry::store(prompt);
+            mesh().objectRegistry::store(decay);
+        }
+
+        volScalarField& prompt =
+            mesh().lookupObjectRef<volScalarField>("promptHeatSource");
+
+        volScalarField& decay =
+            mesh().lookupObjectRef<volScalarField>("decayHeatSource");
+
+        // Add to source
+
+        scalarField& heSource = eqn.source();
+        const scalarField& V = mesh().V();
+
+        heSource -= (prompt.field() + decay.field()) * V;
+    #};
+}

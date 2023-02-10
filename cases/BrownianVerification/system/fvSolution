@@ -1,0 +1,77 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+
+solvers
+{
+    "alpha.*"
+    {
+        nAlphaCorr      1;
+        nMomentCorr     1;
+        nAlphaSubCycles 1;
+    }
+
+    p_rgh
+    {
+        solver          PCG;
+        preconditioner  DIC;
+        tolerance       1e-6;
+        relTol          0.1;
+        maxIter         100;
+    }
+
+    p_rghFinal
+    {
+        $p_rgh;
+        relTol          0.0;
+    }
+
+    "U.*"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-5;
+        relTol          0;
+        minIter         1;
+    }
+
+    Nsystem
+    {
+        tolerance       1e-5;
+        silent          true;
+        minIter         1;
+        maxIter         3;
+    }
+
+    "N[fc].*"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-5;
+        relTol          0;
+        minIter         1;
+    }
+
+    "(e|k|epsilon|kappa|lambda).*"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-5;
+        relTol          0;
+        minIter         1;
+        maxIter         10;
+    }
+}
+
+PIMPLE
+{
+    nOuterCorrectors    1;
+    nCorrectors         2;
+    nNonOrthogonalCorrectors 0;
+    faceMomentum        true;
+}

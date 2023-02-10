@@ -1,0 +1,138 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+
+application     multiphaseEulerFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         1000;
+
+deltaT          1e-3;
+
+writeControl    adjustableRunTime;
+
+writeInterval   200;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
+
+adjustTimeStep  yes;
+
+maxCo           0.5;
+
+maxDeltaT       1;
+
+libs
+(
+    // From the LogMoM repository
+    "libLogMoM.so"
+
+    // From the flotationFoam repository
+    "libflotation.so"
+);
+
+functions
+{
+    vesselMeanDiameter
+    {
+        type            volFieldValue;
+        log             no;
+        writeFields     no;
+        regionType      cellZone;
+        name            vessel;
+        operation       volAverage;
+        weightField     alpha.helium;
+        fields          (d.helium);
+    }
+
+    vesselMeanVoidFraction
+    {
+        type            volFieldValue;
+        log             no;
+        writeFields     no;
+        regionType      cellZone;
+        name            vessel;
+        operation       volAverage;
+        fields          (alpha.helium);
+    }
+
+    freeParticles
+    {
+        type            volFieldValue;
+        log             no;
+        writeFields     no;
+        operation       volAverage;
+        fields
+        (
+            #include "Nfs"
+        );
+    }
+
+/*
+    // These fluxes can be used to check conservation of free particles, so that
+    // the decay of free particles is truly by flotation.
+    
+    inletFreeParticleFluxes
+    {
+        type            surfaceFieldValue;
+        log             no;
+        writeFields     no;
+        regionType      patch;
+        name            inlet;
+        operation       sum;
+        fields
+        (
+            #include "Phifs"
+        );
+    }
+
+    outletFreeParticleFluxes
+    {
+        type            surfaceFieldValue;
+        log             no;
+        writeFields     no;
+        regionType      patch;
+        name            outlet;
+        operation       sum;
+        fields
+        (
+            #include "Phifs"
+        );
+    }
+
+    wallFreeParticleFluxes
+    {
+        type            surfaceFieldValue;
+        log             no;
+        writeFields     no;
+        regionType      patch;
+        name            walls;
+        operation       sum;
+        fields
+        (
+            #include "Phifs"
+        );
+    }
+*/
+}

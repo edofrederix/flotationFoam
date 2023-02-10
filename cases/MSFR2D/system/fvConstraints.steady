@@ -1,0 +1,19 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+
+pump
+{
+    type            meanVelocityForce;
+
+    selectionMode   cellZone;
+    cellZone        pump;
+
+    U               U.salt;
+    Ubar            (0 -1.555 0)
+
+    relaxation      0.1;
+}

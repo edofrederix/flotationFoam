@@ -1,0 +1,26 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+
+limitp
+{
+    type       limitPressure;
+
+    min        1e4;
+}
+
+frother
+{
+    type            fixedValueConstraint;
+
+    selectionMode   cellZone;
+    cellZone        frother;
+
+    fieldValues
+    {
+        #include "NcConstraints"
+    }
+}

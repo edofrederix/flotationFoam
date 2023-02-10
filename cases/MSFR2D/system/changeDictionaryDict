@@ -1,0 +1,11 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+
+controlDict
+{
+    endTime 2;
+}

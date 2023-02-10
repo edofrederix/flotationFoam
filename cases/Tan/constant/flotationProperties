@@ -1,0 +1,89 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      flotationParticleProperties;
+}
+
+rho                 2000;
+Sct                 1.0;
+
+continuousPhaseName water;
+dispersedPhaseName  nitrogen;
+
+sectionalDistribution
+{
+    type        sectionalList;
+    diameters   (1e-9 2e-9 4e-9 8e-9 1.6e-8 3.2e-8 6.4e-8 1.28e-7 2.56e-7 5.12e-7 1.024e-6 2.048e-6 4.069e-6 8.138e-6 1.6276e-5 3.2552e-5);
+}
+
+particleVelocityModel
+{
+    type        localEquilibrium;
+    steadyState false;
+}
+
+BrownianDiffusivityModel
+{
+    // Massive enhancement of the diffusivity to match the experimentally
+    // measured flotation rate
+    
+    type        StokesEinstein;
+    f           2000.0;
+}
+
+efficiencyModels
+{
+    collisions
+    {
+        type    Sutherland;
+    }
+    attachment
+    {
+        type    Sutherland;
+
+        inductionTime
+        {
+            type    Dai;
+            A       2;
+            B       0.6;
+        }
+    }
+    stabilization
+    {
+        type    ideal;
+    }
+}
+
+interactionModels
+{
+    attachment
+    {
+        deterministic
+        {
+            type    spherical;
+        }
+        stochastic
+        {
+            type    none;
+        }
+        Brownian
+        {
+            type    infiniteSink;
+
+            SherwoodCorrelation
+            {
+                type    RanzMarshall;
+            }
+        }
+    }
+    detachment
+    {
+        stochastic
+        {
+            type    none;
+        }
+    }
+}

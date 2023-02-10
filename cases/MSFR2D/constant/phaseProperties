@@ -1,0 +1,236 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+
+type basicMultiphaseSystem;
+
+phases (helium salt);
+
+helium
+{
+    type            purePhaseModel;
+
+    diameterModel   threeMomentLogNormal;
+
+    threeMomentLogNormalCoeffs
+    {
+        dMax            2e-2;
+        dMin            1e-6;
+
+        p               3;
+        q               2;
+
+        continuousPhase salt;
+
+        closingMoment   interfacialArea;
+
+        coalescence
+        {
+            active                  true;
+            efficiencyType          PrinceBlanch;
+            sigma                   0.07197;
+            frequencyType           PrinceBlanch;
+            turbulentCoalescence    true;
+            buoyantCoalescence      true;
+            laminarCoalescence      false;
+            GaussHermite            5;
+        }
+
+        breakup
+        {
+            active          true;
+            type            LuoSvendsen;
+            sigma           0.07197;
+            GaussHermite    5;
+            GaussLegendre   5;
+        }
+    }
+
+    residualAlpha   1e-6;
+}
+
+salt
+{
+    type            purePhaseModel;
+
+    diameterModel   constant;
+
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+
+    residualAlpha   1e-6;
+}
+
+blending
+{
+    default
+    {
+        type            linear;
+        minFullyContinuousAlpha.helium 0.7;
+        minPartlyContinuousAlpha.helium 0.3;
+        minFullyContinuousAlpha.salt 0.7;
+        minPartlyContinuousAlpha.salt 0.3;
+    }
+
+    drag
+    {
+        type            linear;
+        minFullyContinuousAlpha.helium 0.7;
+        minPartlyContinuousAlpha.helium 0.5;
+        minFullyContinuousAlpha.salt 0.7;
+        minPartlyContinuousAlpha.salt 0.5;
+    }
+
+}
+
+surfaceTension
+(
+    (helium and salt)
+    {
+        type    constant;
+        sigma   0.07;
+    }
+);
+
+aspectRatio
+(
+    (helium in salt)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (salt in helium)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (helium in salt)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (salt in helium)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (helium and salt)
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+
+virtualMass
+(
+    (helium in salt)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    (salt in helium)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+heatTransfer
+(
+    (helium in salt)
+    {
+        type            RanzMarshall;
+        residualAlpha   1e-4;
+    }
+
+    (salt in helium)
+    {
+        type            RanzMarshall;
+        residualAlpha   1e-4;
+    }
+);
+
+turbulentDispersion
+(
+    (helium in salt)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+
+    (salt in helium)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+);
+
+lift
+(
+    (helium in salt)
+    {
+        type wallDamped;
+
+        lift
+        {
+            type Tomiyama;
+
+            aspectRatio
+            {
+                type            constant;
+                E0              1.0;
+            }
+        }
+
+        wallDamping
+        {
+            type                cosine;
+            Cd                  3.0;
+        }
+    }
+
+    (salt in helium)
+    {
+        type none;
+    }
+);
+
+wallLubrication
+();
+
+phaseTransfer
+();
+
+interfaceCompression
+();

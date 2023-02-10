@@ -1,0 +1,23 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransport.nitrogen;
+}
+
+simulationType  LES;
+
+LES
+{
+    model    continuousGasKEqn;
+
+    turbulence      on;
+    printCoeffs     on;
+
+    delta           cubeRootVol;
+
+    cubeRootVolCoeffs
+    {
+    }
+}

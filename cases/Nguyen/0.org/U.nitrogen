@@ -1,0 +1,30 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U.nitrogen;
+}
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0.03464);
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+    outlet
+    {
+        type            pressureInletOutletVelocity;
+        phi             phi.nitrogen;
+        value           $internalField;
+    }
+    walls
+    {
+        type            noSlip;
+    }
+}

@@ -1,0 +1,224 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+
+type basicMultiphaseSystem;
+
+phases (nitrogen water);
+
+nitrogen
+{
+    type            pureIsothermalPhaseModel;
+
+    diameterModel   threeMomentLogNormal;
+
+    threeMomentLogNormalCoeffs
+    {
+        dMax            2e-2;
+        dMin            1e-6;
+
+        p               3;
+        q               2;
+
+        continuousPhase water;
+
+        closingMoment   interfacialArea;
+
+        coalescence
+        {
+            active                  true;
+            efficiencyType          PrinceBlanch;
+            sigma                   0.07197;
+            frequencyType           PrinceBlanch;
+            turbulentCoalescence    true;
+            buoyantCoalescence      true;
+            laminarCoalescence      false;
+            GaussHermite            5;
+        }
+
+        breakup
+        {
+            active          true;
+            type            LuoSvendsen;
+            sigma           0.07197;
+            GaussHermite    5;
+            GaussLegendre   5;
+        }
+    }
+
+    residualAlpha   1e-6;
+}
+
+water
+{
+    type            pureIsothermalPhaseModel;
+
+    diameterModel   constant;
+
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+
+    residualAlpha   1e-6;
+}
+
+blending
+{
+    default
+    {
+        type            linear;
+        minFullyContinuousAlpha.nitrogen 0.7;
+        minPartlyContinuousAlpha.nitrogen 0.3;
+        minFullyContinuousAlpha.water 0.7;
+        minPartlyContinuousAlpha.water 0.3;
+    }
+
+    drag
+    {
+        type            linear;
+        minFullyContinuousAlpha.nitrogen 0.7;
+        minPartlyContinuousAlpha.nitrogen 0.5;
+        minFullyContinuousAlpha.water 0.7;
+        minPartlyContinuousAlpha.water 0.5;
+    }
+
+}
+
+surfaceTension
+(
+    (nitrogen and water)
+    {
+        type    constant;
+        sigma   0.07;
+    }
+);
+
+aspectRatio
+(
+    (nitrogen in water)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (water in nitrogen)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (nitrogen in water)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (water in nitrogen)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (nitrogen and water)
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+
+virtualMass
+(
+    (nitrogen in water)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    (water in nitrogen)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+heatTransfer
+();
+
+turbulentDispersion
+(
+    (nitrogen in water)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+
+    (water in nitrogen)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+);
+
+lift
+(
+    (nitrogen in water)
+    {
+        type wallDamped;
+
+        lift
+        {
+            type Tomiyama;
+
+            aspectRatio
+            {
+                type            constant;
+                E0              1.0;
+            }
+        }
+
+        wallDamping
+        {
+            type                cosine;
+            Cd                  3.0;
+        }
+    }
+
+    (water in nitrogen)
+    {
+        type none;
+    }
+);
+
+wallLubrication
+();
+
+phaseTransfer
+();
+
+interfaceCompression
+();
