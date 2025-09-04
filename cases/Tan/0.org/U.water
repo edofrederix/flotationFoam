@@ -14,8 +14,7 @@ boundaryField
 {
     inlet
     {
-        type            fixedValue;
-        value           $internalField;
+        type            noSlip;
     }
     outlet
     {

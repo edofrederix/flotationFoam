@@ -8,21 +8,21 @@ FoamFile
 
 dimensions      [0 0 0 0 0 0 0];
 
-internalField   uniform 0;
+internalField   uniform 0.01;
 
 boundaryField
 {
     inlet
     {
         type            fixedValue;
-        value           uniform 0.01;
+        value           $internalField;
     }
     outlet
     {
         type            inletOutlet;
         phi             phi.nitrogen;
-        inletValue      uniform 1;
-        value           uniform 1;
+        inletValue      uniform 0.99;
+        value           $internalField;
     }
     walls
     {

@@ -1,0 +1,80 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      createZonesDict;
+}
+
+bubbles
+{
+    type        intersection;
+    zoneType    face;
+
+    outer
+    {
+        type        patch;
+        zoneType    face;
+        patch       w_core;
+    }
+
+    bubbles_all
+    {
+        type    union;
+
+        bubbles1
+        {
+            type        cylinder;
+            zoneType    face;
+
+            point1      (1.17343844  0.23341142 -1.1);
+            point2      (1.17343844  0.23341142 -1.0);
+
+            radius      0.05;
+        }
+
+        bubbles2
+        {
+            type        cylinder;
+            zoneType    face;
+
+            point1      (0.99479308  0.66469948 -1.1);
+            point2      (0.99479308  0.66469948 -1.0);
+
+            radius      0.05;
+        }
+
+        bubbles3
+        {
+            type        cylinder;
+            zoneType    face;
+
+            point1      (0.66469948  0.99479308 -1.1);
+            point2      (0.66469948  0.99479308 -1.0);
+
+            radius      0.05;
+        }
+
+        bubbles4
+        {
+            type        cylinder;
+            zoneType    face;
+
+            point1      (0.23341142  1.17343844 -1.1);
+            point2      (0.23341142  1.17343844 -1.0);
+
+            radius      0.05;
+        }
+    }
+}
+
+vessel
+{
+    type        cylinder;
+    zoneType    cell;
+
+    point1      (0 0 -10);
+    point2      (0 0 10);
+
+    radius      1.41098;
+}

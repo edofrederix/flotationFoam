@@ -1,0 +1,5 @@
+dynamicCode
+polyMesh
+mesh
+output-*/
+log.*

@@ -5,11 +5,10 @@ removal in the molten salt fast reactor" by E.M.A. Frederix and E.M.J. Komen.
 
 ## Authors
 
-FlotationFoam is developed by Edo Frederix as part of the SAMOSAFER H2020
-Euroatom project at the Nuclear Research and Consultancy Group (NRG),
-Westerduinweg 3, 1755 LE Petten, the Netherlands. This project has received
-funding from the Euratom research and training program 2019–2023, under grant
-agreement No. 847527.
+FlotationFoam is developed by Edo Frederix as was initially part of the
+SAMOSAFER H2020 Euroatom project at NRG Pallas, Westerduinweg 3, 1755 LE Petten,
+the Netherlands. This project has received funding from the Euratom research and
+training program 2019–2023, under grant agreement No. 847527.
 
 ## License
 
@@ -17,14 +16,15 @@ FlotationFoam is published under the GNU GPL Version 3 license.
 
 ## Prerequisites
 
-* OpenFOAM-10 Foundation version. While it may compile against other versions,
+* OpenFOAM-13 Foundation version. While it may compile against other versions,
   this is not tested and currently not supported.
 * LogMoM: https://github.com/edofrederix/LogMoM
 
 ## Usage
 
-* Make sure that OpenFOAM-10 is loaded into your environment
-* Download and compile the LogMoM library (see its README)
+* Make sure that OpenFOAM-13 is loaded into your environment
+* Download and compile the LogMoM library. The LogMoM library can be found at
+  https://github.com/edofrederix/LogMoM
 * Compile flotationFoam with
 
 <pre>
@@ -35,18 +35,16 @@ FlotationFoam is published under the GNU GPL Version 3 license.
 
 <pre>
 ./prep.sh <args>
-multiphaseEulerFoam
+foamRun
 </pre>
 
 * The prep shell scripts set up the case by configuring the required parameters.
-  For the MSFR2D case, a four arguments must be provided: number of cells per
-  unit length, inlet size distribution sigma, inlet size distribution Sauter
-  mean diameter and helium mass flow rate.
+  Some prep shell scripts take optional arguments.
 * Some cases can also be run in parallel, with
 
 <pre>
 ./prep.sh
-mpirun -np 4 multiphaseEulerFoam -parallel
+mpirun -np 4 foamRun -parallel
 </pre>
 
 * To reconstruct the results from the paper, use the MSFR2D case with the
@@ -74,16 +72,17 @@ flotation
 }
 </pre>
 
-to `constant/fvModels`. Finally, your case should provide initial and boundary
-conditions for the `Nf.#` and `Nc.#` fields, which are the free and captured
-number concentration fields for section `#`. See the cases directory for a few
-examples.
+to `constant/fvModels`. Parameters are then read from the
+`constant/flotationProperties` file. Finally, your case should provide initial
+and boundary conditions for the `Nf.#` and `Nc.#` fields, which are the free and
+captured number concentration fields for section `#`. See the cases directory
+for a few examples.
 
 ## Contact & support
 
 For bug reports or support, feel free to contact Edo Frederix at
 frederix@nrg.eu. Please note that this code is not maintained nor regularly
-updated, and is only tested with OpenFOAM-10. Questions related to other
+updated, and is only tested with OpenFOAM-13. Questions related to other
 versions will thus not be answered.
 
 ## Disclaimer

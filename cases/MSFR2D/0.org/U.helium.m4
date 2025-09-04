@@ -14,20 +14,32 @@ boundaryField
 {
     inlet
     {
-        type            uniformFixedValue;
-        value           $internalField;
-        uniformValue    table
-        (
-            (0 (0 0 0))
-            (1 (0 VARUHELIUM 0))
-        );
+        type                mappedInternalValue;
+        interpolationScheme cell;
+        value               $internalField;
+        setAverage          true;
+        average             (0 -1.55289 0);
     }
+
+    bubbles
+    {
+        type            flowRateInletVelocity;
+        massFlowRate    table
+        (
+            (0 0)
+            (1 VARMASSFLOWRATEQ)
+        );
+        rho             rho.helium;
+        value           $internalField;
+    }
+
     outlet
     {
         type            pressureInletOutletVelocity;
         phi             phi.helium;
         value           $internalField;
     }
+
     walls
     {
         type            noSlip;

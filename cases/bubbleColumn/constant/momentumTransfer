@@ -1,0 +1,129 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransfer;
+}
+
+drag
+{
+    air_dispersedIn_water
+    {
+        type            LogMoM;
+        mode            quadrature;
+        GaussHermite    3;
+
+        drag
+        {
+            type            SchillerNaumann;
+            residualRe      1e-3;
+            swarmCorrection
+            {
+                type        none;
+            }
+        }
+    }
+
+    water_dispersedIn_air
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    air_segregatedWith_water
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+}
+
+
+virtualMass
+{
+    air_dispersedIn_water
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    water_dispersedIn_air
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+}
+
+turbulentDispersion
+{
+    air_dispersedIn_water
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+
+    water_dispersedIn_air
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+}
+
+lift
+{
+    air_dispersedIn_water
+    {
+        type            LogMoM;
+        mode            quadrature;
+        GaussHermite    3;
+
+        lift
+        {
+            type    Tomiyama;
+
+            aspectRatio
+            {
+                type    Wellek;
+            }
+        }
+
+        wallDamping
+        {
+            type            cosine;
+            Cd              1.0;
+            zeroWallDist    0;
+        }
+    }
+
+    water_dispersedIn_air
+    {
+        type none;
+    }
+}
+
+wallLubrication
+{
+    air_dispersedIn_water
+    {
+        type    Antal;
+        Cw1     -0.01;
+        Cw2     0.05;
+    }
+
+    water_dispersedIn_air
+    {
+        type    none;
+    }
+}

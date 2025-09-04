@@ -1,7 +1,7 @@
 #!/bin/bash
 
+DSM=1e-3
 SIGMA=0.2
-DSM=0.001
 
 A=0.00171
 B=0.00424
@@ -41,7 +41,7 @@ VARS="\
     "
 
 m4 $VARS system/blockMeshDict.m4 > system/blockMeshDict
-m4 $VARS system/topoSetDict.m4 > system/topoSetDict
+m4 $VARS system/createZonesDict.m4 > system/createZonesDict
 m4 $VARS system/setFieldsDict.m4 > system/setFieldsDict
 
 rm -f system/Nfs system/Ncs system/NcConstraints system/NfFiedValues
@@ -55,17 +55,18 @@ for I in $(seq 1 $NSECTIONS); do
     echo Nf.$J >> system/Nfs
     echo Nc.$J >> system/Ncs
     echo "Nc.$J 0;" >> system/NcConstraints
-    echo "volScalarFieldValue Nf.$J $NF" >> system/NfFieldValues
+    echo "Nf.$J $NF;" >> system/NfFieldValues
 
 done
 
-m4 $VARS 0/kappa.nitrogen.m4 > 0/kappa.nitrogen
+m4 $VARS 0/kappai.nitrogen.m4 > 0/kappai.nitrogen
 m4 $VARS 0/lambda.nitrogen.m4 > 0/lambda.nitrogen
 
-rm 0/Nf.m4 0/kappa.nitrogen.m4 0/lambda.nitrogen.m4
+rm -f 0/*.m4
 
 runApplication blockMesh
 
-runApplication topoSet
+runApplication createZones
 runApplication setFields
 runApplication setLogNormal nitrogen $SIGMA $DSM
+runApplication decomposePar

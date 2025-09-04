@@ -14,15 +14,26 @@ boundaryField
 {
     inlet
     {
+        type                mappedInternalValue;
+        value               $internalField;
+        interpolationScheme cell;
+        setAverage          true;
+        average             (0 -1.55289 0);
+    }
+
+    bubbles
+    {
         type            fixedValue;
         value           $internalField;
     }
+
     outlet
     {
         type            pressureInletOutletVelocity;
         phi             phi.salt;
         value           $internalField;
     }
+
     walls
     {
         type            noSlip;

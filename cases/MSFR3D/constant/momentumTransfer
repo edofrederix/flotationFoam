@@ -1,0 +1,72 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransfer;
+}
+
+drag
+{
+    helium_dispersedIn_salt
+    {
+        type            LogMoM;
+        mode            quadrature;
+        GaussHermite    3;
+
+        drag
+        {
+            type            SchillerNaumann;
+            residualRe      1e-3;
+        }
+    }
+
+    salt_dispersedIn_helium
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+    }
+
+    helium_segregatedWith_salt
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+    }
+}
+
+virtualMass
+{
+    helium_dispersedIn_salt
+    {
+        type    constantCoefficient;
+        Cvm     0.5;
+    }
+
+    salt_dispersedIn_helium
+    {
+        type    none;
+    }
+}
+
+turbulentDispersion
+{
+    helium_dispersedIn_salt
+    {
+        type            LopezDeBertodano;
+        Ctd             1.0;
+        residualAlpha   1e-3;
+    }
+
+    salt_dispersedIn_helium
+    {
+        type    none;
+    }
+}
+
+lift
+{}
+
+wallLubrication
+{}

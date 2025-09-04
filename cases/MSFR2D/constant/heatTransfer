@@ -1,0 +1,42 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      heatTransfer;
+}
+
+helium_dispersedIn_salt_inThe_salt
+{
+    type            LogMoM;
+
+    mode            quadrature;
+    GaussHermite    3;
+
+    heatTransfer
+    {
+        type            RanzMarshall;
+    }
+}
+
+helium_dispersedIn_salt_inThe_helium
+{
+    type            LogMoM;
+
+    mode            quadrature;
+    GaussHermite    3;
+
+    heatTransfer
+    {
+        type            RanzMarshall;
+    }
+}
+
+salt_dispersedIn_helium_inThe_salt
+{
+    type            spherical;
+}
+
+salt_dispersedIn_helium_inThe_helium
+{
+    type            spherical;
+}

@@ -1,0 +1,45 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      omega.salt;
+}
+
+dimensions      [0 0 -1 0 0 0 0];
+
+internalField   uniform 100;
+
+boundaryField
+{
+    inlet
+    {
+        type                mappedInternalValue;
+        value               $internalField;
+        interpolationScheme cell;
+        setAverage          false;
+        average             0;
+    }
+
+    bubbles
+    {
+        type            fixedValue;
+        value           $internalField;
+    }
+
+    outlet
+    {
+        type            inletOutlet;
+        phi             phi.salt;
+        value           $internalField;
+        inletValue      $internalField;
+    }
+
+    walls
+    {
+        type            omegaWallFunction;
+        value           $internalField;
+    }
+
+    #include "common"
+}

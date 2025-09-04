@@ -7,7 +7,9 @@ FoamFile
     object      controlDict;
 }
 
-application     multiphaseEulerFoam;
+application     foamRun;
+
+solver          multiphaseEuler;
 
 startFrom       latestTime;
 
@@ -25,7 +27,7 @@ writeInterval   1;
 
 purgeWrite      0;
 
-writeFormat     ascii;
+writeFormat     binary;
 
 writePrecision  6;
 

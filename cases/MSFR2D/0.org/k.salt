@@ -14,9 +14,19 @@ boundaryField
 {
     inlet
     {
+        type                mappedInternalValue;
+        value               $internalField;
+        interpolationScheme cell;
+        setAverage          false;
+        average             0;
+    }
+
+    bubbles
+    {
         type            fixedValue;
         value           $internalField;
     }
+
     outlet
     {
         type            inletOutlet;
@@ -24,6 +34,7 @@ boundaryField
         value           $internalField;
         inletValue      $internalField;
     }
+
     walls
     {
         type            kqRWallFunction;

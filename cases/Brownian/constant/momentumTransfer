@@ -1,0 +1,59 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransfer;
+}
+
+drag
+{
+    air_dispersedIn_water
+    {
+        type            LogMoM;
+        mode            quadrature;
+        GaussHermite    3;
+
+        drag
+        {
+            type            TomiyamaCorrelated;
+
+            A               24.0;
+
+            residualRe      1e-3;
+            residualEo      1e-6;
+
+            swarmCorrection
+            {
+                type        none;
+            }
+        }
+    }
+}
+
+virtualMass
+{
+    air_dispersedIn_water
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+}
+
+lift
+{}
+
+wallLubrication
+{}
+
+turbulentDispersion
+{
+    air_dispersedIn_water
+    {
+        type                Burns;
+        sigma               0.7;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+}

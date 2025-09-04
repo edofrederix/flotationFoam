@@ -1,5 +1,3 @@
 #!/bin/sh
 
-# Libraries
-
-wmake libso libraries/flotation
+wmake -a -s src

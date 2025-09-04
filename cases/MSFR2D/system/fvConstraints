@@ -1,0 +1,38 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+
+limitp
+{
+    type    limitPressure;
+
+    min     1e4;
+}
+
+limitHeliumT
+{
+    type        limitTemperature;
+
+    cellZone    all;
+
+    min         923;
+    max         1060;
+
+    phase       helium;
+}
+    
+limitSaltT
+{
+    type        limitTemperature;
+
+    cellZone    all;
+
+    min         923;
+    max         1060;
+
+    phase       salt;
+}
+    

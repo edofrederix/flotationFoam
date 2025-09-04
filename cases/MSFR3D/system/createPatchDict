@@ -1,0 +1,20 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+patches
+{
+    bubbles
+    {
+        patchInfo
+        {
+            type        patch;
+        }
+
+        constructFrom   zone;
+        zone            bubbles;
+    }
+}

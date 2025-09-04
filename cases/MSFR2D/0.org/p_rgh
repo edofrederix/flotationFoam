@@ -8,7 +8,7 @@ FoamFile
 
 dimensions      [1 -1 -2 0 0 0 0];
 
-internalField   uniform 1e5;
+internalField   uniform 2e5;
 
 boundaryField
 {
@@ -17,12 +17,21 @@ boundaryField
         type            fixedFluxPressure;
         value           $internalField;
     }
-    outlet
+
+    bubbles
     {
-        type            prghPressure;
-        p               $internalField;
+        type            fixedFluxPressure;
         value           $internalField;
     }
+
+    outlet
+    {
+        type            prghTotalPressure;
+        p0              $internalField;
+        U               U.salt;
+        value           $internalField;
+    }
+
     walls
     {
         type            fixedFluxPressure;

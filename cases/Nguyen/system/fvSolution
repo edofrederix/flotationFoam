@@ -12,7 +12,6 @@ solvers
     "alpha.*"
     {
         nAlphaCorr      1;
-        nMomentCorr     1;
         nAlphaSubCycles 2;
     }
 
@@ -20,65 +19,69 @@ solvers
     {
         solver          GAMG;
         smoother        DIC;
-        tolerance       1e-8;
+        tolerance       1e-6;
         relTol          0;
+        maxIter         100;
     }
 
     p_rghFinal
     {
         $p_rgh;
-        relTol          0;
     }
 
-    "U.*"
+    "U\..*"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-5;
+        tolerance       1e-8;
         relTol          0;
         minIter         1;
     }
 
     Nsystem
     {
-        tolerance       1e-5;
+        tolerance       1e-6;
         silent          true;
         minIter         1;
-        maxIter         10;
+        maxIter         3;
     }
 
-    "N[fc].*"
+    "N[fc]\..*"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-5;
+        tolerance       1e-8;
         relTol          0;
         minIter         1;
     }
 
-    "(e|k|epsilon|omega|kappa|lambda).*"
+    "(e|k|epsilon|kappai|lambda)\..*"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-5;
+        tolerance       1e-8;
         relTol          0;
         minIter         1;
         maxIter         10;
+    }
+
+    yPsi
+    {
+        solver          PCG;
+        preconditioner  none;
+        tolerance       1e-10;
+        relTol          0;
+    }
+
+    yPsiFinal
+    {
+        $yPsi;
     }
 }
 
 PIMPLE
 {
     nOuterCorrectors    1;
-    nCorrectors         3;
+    nCorrectors         2;
     nNonOrthogonalCorrectors 0;
-    faceMomentum        true;
-}
-
-relaxationFactors
-{
-    equations
-    {
-        ".*"            1;
-    }
 }

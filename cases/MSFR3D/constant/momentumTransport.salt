@@ -1,0 +1,17 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransport.salt;
+}
+
+simulationType  RAS;
+
+RAS
+{
+    model           kEpsilon;
+
+    turbulence      on;
+    printCoeffs     on;
+}

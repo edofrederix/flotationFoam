@@ -1,0 +1,71 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+
+phases (air water);
+
+air
+{
+    type            pureIsothermalPhaseModel;
+
+    diameterModel   LogMoM;
+
+    LogMoMCoeffs
+    {
+        dMax            1e-1;
+        dMin            1e-6;
+
+        continuousPhase water;
+
+        sources
+        ();
+    }
+
+    residualAlpha   1e-6;
+}
+
+water
+{
+    type            pureIsothermalPhaseModel;
+
+    diameterModel   constant;
+
+    constantCoeffs
+    {
+        d               1e-4;
+    }
+
+    residualAlpha   1e-6;
+}
+
+blending
+{
+    default
+    {
+        type    continuous;
+        phase   water;
+    }
+}
+
+surfaceTension
+{
+    air_water
+    {
+        type    constant;
+        sigma   0.07;
+    }
+}
+
+aspectRatio
+{
+    air_dispersedIn_water
+    {
+        type            constant;
+        E0              1.0;
+    }
+}

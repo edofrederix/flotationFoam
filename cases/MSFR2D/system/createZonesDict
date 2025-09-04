@@ -1,0 +1,14 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      createZonesDict;
+}
+
+vessel
+{
+    type        box;
+    zoneType    cell;
+    box         (0 -10 -10) (1.1275 10 10);
+}

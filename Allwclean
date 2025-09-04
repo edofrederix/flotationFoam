@@ -1,5 +1,3 @@
 #!/bin/sh
 
-# Libraries
-
-wclean libraries/flotation
+wclean -s all src

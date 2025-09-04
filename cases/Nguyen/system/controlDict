@@ -7,7 +7,9 @@ FoamFile
     object      controlDict;
 }
 
-application     multiphaseEulerFoam;
+application     foamRun;
+
+solver          multiphaseEuler
 
 startFrom       latestTime;
 
@@ -25,7 +27,7 @@ writeInterval   10;
 
 purgeWrite      0;
 
-writeFormat     ascii;
+writeFormat     binary;
 
 writePrecision  6;
 
@@ -59,8 +61,9 @@ functions
         type            volFieldValue;
         libs            ("libfieldFunctionObjects.so");
 
-        writeControl    timeStep;
+        cellZone        all;
 
+        writeControl    timeStep;
         log             no;
         writeFields     no;
 
@@ -77,8 +80,9 @@ functions
         type            volFieldValue;
         libs            ("libfieldFunctionObjects.so");
 
-        writeControl    timeStep;
+        cellZone        all;
 
+        writeControl    timeStep;
         log             no;
         writeFields     no;
 

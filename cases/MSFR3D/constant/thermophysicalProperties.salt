@@ -1,0 +1,41 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      thermophysicalProperties.salt;
+}
+
+thermoType
+{
+    type            heRhoThermo;
+    mixture         pureMixture;
+    transport       const;
+    thermo          hConst;
+    equationOfState rhoConst;
+    specie          specie;
+    energy          sensibleInternalEnergy;
+}
+
+mixture
+{
+    specie
+    {
+        molWeight   89.425;
+    }
+    equationOfState
+    {
+        rho         4215;
+    }
+    thermodynamics
+    {
+        Cp          1594;
+        Hf          0;
+    }
+    transport
+    {
+        mu          0.01;
+        Pr          1;
+    }
+}

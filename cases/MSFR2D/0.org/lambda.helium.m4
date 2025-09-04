@@ -21,6 +21,17 @@ boundaryField
         alphaName       helium;
         value           $internalField;
     }
+
+    bubbles
+    {
+        type            inletOutletLogNormal;
+        phi             alphaPhi.helium;
+        sigma           VARSIGMA;
+        dsm             VARDSM;
+        alphaName       helium;
+        value           $internalField;
+    }
+
     outlet
     {
         type            inletOutletLogNormal;
@@ -30,6 +41,7 @@ boundaryField
         alphaName       helium;
         value           $internalField;
     }
+
     walls
     {
         type            zeroGradient;

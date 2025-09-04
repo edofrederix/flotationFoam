@@ -1,0 +1,14 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      createZonesDict;
+}
+
+frother
+{
+    type        box;
+    zoneType    cell;
+    box         (-1 -1 0.26) (1 1 1);
+}
