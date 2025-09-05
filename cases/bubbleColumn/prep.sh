@@ -17,9 +17,13 @@ VARS="\
     -DVARNF=$NF \
     "
 
+rm -f system/particleVelocities
+
 for I in $(seq 1 $NSECTIONS); do
 
     m4 $VARS -DVARNFNAME=Nf.$I -DVARNFPHI=phif.$I 0/Nf.m4 > 0/Nf.$I
+    m4 -DVARI=$((I-1)) -DVARNAME=velocity$((I-1)) \
+        system/particleVelocity.m4 >> system/particleVelocities
 
 done
 

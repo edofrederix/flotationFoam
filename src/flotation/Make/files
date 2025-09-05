@@ -76,6 +76,8 @@ interactionModels/detachmentModels/stochasticDetachmentModels/stochasticDetachme
 interactionModels/detachmentModels/stochasticDetachmentModels/noStochDetach/noStochDetach.C
 interactionModels/detachmentModels/stochasticDetachmentModels/BloomHeindel/BloomHeindel.C
 
+functionObjects/particleVelocity/particleVelocity.C
+
 flotationSystem.C
 
 fvModels/flotation/flotation.C
