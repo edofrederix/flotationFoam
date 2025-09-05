@@ -33,8 +33,11 @@ protected:
         //- Particle section number concentration field
         autoPtr<volScalarField> N_;
 
-        //- Particle section effective flux field
-        autoPtr<surfaceScalarField> Phi_;
+        //- Particle velocity flux field
+        autoPtr<surfaceScalarField> phi_;
+
+        //- Actual particle flux field
+        autoPtr<surfaceScalarField> phiN_;
 
 
 public:
@@ -71,15 +74,26 @@ public:
             return N_();
         }
 
-        //- Return the particle section effective flux field
-        inline surfaceScalarField& Phi()
+        //- Return the particle velocity flux field
+        inline surfaceScalarField& phi()
         {
-            return Phi_();
+            return phi_();
         }
 
-        inline const surfaceScalarField& Phi() const
+        inline const surfaceScalarField& phi() const
         {
-            return Phi_();
+            return phi_();
+        }
+
+        //- Return the actual particle flux field
+        inline surfaceScalarField& phiN()
+        {
+            return phiN_();
+        }
+
+        inline const surfaceScalarField& phiN() const
+        {
+            return phiN_();
         }
 
         //- Return the sectional number
@@ -88,11 +102,14 @@ public:
             return sectionNum_;
         }
 
-        //- Return the particle type
-        virtual word particleType() = 0;
+        //- Return the particle velocity, calculated from the velocity flux
+        virtual tmp<volVectorField> V() const;
 
         //- Return the particle type
-        virtual word particleTypeShort() = 0;
+        virtual word particleType() const = 0;
+
+        //- Return the particle type
+        virtual word particleTypeShort() const = 0;
 };
 
 

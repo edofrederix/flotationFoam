@@ -41,56 +41,44 @@ Foam::particleVelocityModels::localEquilibrium::~localEquilibrium()
 void Foam::particleVelocityModels::localEquilibrium::update()
 {
     const dimensionedScalar& rhop = system_.rho();
-    const uniformDimensionedVectorField& g =
-        system_.mesh().lookupObject<uniformDimensionedVectorField>("g");
 
-    const volScalarField& rhol = system_.twoPhasePair().continuous().rho();
-    const volVectorField& Ul = system_.twoPhasePair().continuous().U();
-    const volScalarField nul
+    const surfaceScalarField gAf
     (
-        system_.twoPhasePair().continuous().fluidThermo().nu()
+        system_.mesh().lookupObject<uniformDimensionedVectorField>("g")
+      & system_.mesh().Sf()
     );
 
-    const scalar steadyState
+    const surfaceScalarField& phi =
+        system_.twoPhasePair().continuous().phi();
+
+    const surfaceScalarField rho
     (
-        dict_.lookupOrDefault<Switch>("steadyState", false) == true
-      ? 1.0
-      : 0.0
+        fvc::interpolate
+        (
+            system_.twoPhasePair().continuous().rho()
+        )
     );
+
+    const surfaceScalarField nu
+    (
+        fvc::interpolate
+        (
+            system_.twoPhasePair().continuous().fluidThermo().nu()
+        )
+    );
+
+    const scalar steadyState =
+        dict_.lookupOrDefault<Switch>("steadyState", false);
 
     forAll(system_.freeParticles(), sectionI)
     {
-        surfaceScalarField& phi = system_.freeParticles()[sectionI].phi();
-        volVectorField& V = system_.freeParticles()[sectionI].V();
+        const dimensionedScalar d(system_.distribution()[sectionI]);
 
-        const dimensionedScalar ds(system_.distribution()[sectionI]);
+        const surfaceScalarField tau(rhop/rho*sqr(d)/(18.0*nu));
+        const surfaceScalarField ddt(fvc::ddt(phi));
 
-        tmp<volScalarField> ttau
-        (
-            new volScalarField
-            (
-                IOobject
-                (
-                    "tau",
-                    mesh_.time().time().name(),
-                    mesh_,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE
-                ),
-                mesh_,
-                dimensionedScalar("tau", dimTime, 0.0)
-            )
-        );
-
-        volScalarField& tau = ttau.ref();
-
-        tau = rhop/rhol * sqr(ds)/(18.0*nul);
-
-        V = Ul + ((1.0 - rhol/rhop)*g - (1.0-steadyState)*fvc::ddt(Ul))*tau;
-
-        V.correctBoundaryConditions();
-
-        phi = fvc::flux(V);
+        system_.freeParticles()[sectionI].phi() =
+            phi + ((1.0 - rho/rhop)*gAf - (1.0 - steadyState)*ddt)*tau;
     }
 }
 

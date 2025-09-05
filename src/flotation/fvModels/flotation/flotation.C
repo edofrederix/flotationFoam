@@ -48,7 +48,10 @@ Foam::fv::flotation::~flotation()
 
 void Foam::fv::flotation::correct()
 {
-    system_.solve();
+    if (mesh().time().timeIndex() > 1)
+    {
+        system_.solve();
+    }
 }
 
 bool Foam::fv::flotation::movePoints()

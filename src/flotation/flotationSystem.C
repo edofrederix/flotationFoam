@@ -364,9 +364,6 @@ void Foam::flotationSystem::solve()
         const surfaceScalarField& phif = freeParticles_[sectionI].phi();
         const surfaceScalarField& phic = capturedParticles_[sectionI].phi();
 
-        surfaceScalarField& Phif = freeParticles_[sectionI].Phi();
-        surfaceScalarField& Phic = capturedParticles_[sectionI].Phi();
-
         const volScalarField D(BrownDiff_().D(sectionI) + nut/Sct_);
 
         const volScalarField Datt(detAttachRate_().rate(sectionI));
@@ -454,12 +451,11 @@ void Foam::flotationSystem::solve()
             {
                 // Store effective fluxes
 
-                Phif = NfEqn.flux();
-                Phic = NcEqn.flux();
+                freeParticles_[sectionI].phiN() = NfEqn.flux();
+                capturedParticles_[sectionI].phiN() = NcEqn.flux();
 
                 break;
             }
-
         }
 
         Info << "flotationSystem: Solving for section " << sectionI+1

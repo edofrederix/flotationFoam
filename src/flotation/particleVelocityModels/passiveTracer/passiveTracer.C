@@ -40,17 +40,11 @@ Foam::particleVelocityModels::passiveTracer::~passiveTracer()
 
 void Foam::particleVelocityModels::passiveTracer::update()
 {
-    const volVectorField& Ul = system_.twoPhasePair().continuous().U();
+    const surfaceScalarField& phi = system_.twoPhasePair().continuous().phi();
 
     forAll(system_.freeParticles(), sectionI)
     {
-        surfaceScalarField& phi = system_.freeParticles()[sectionI].phi();
-        volVectorField& V = system_.freeParticles()[sectionI].V();
-
-        V = Ul;
-        V.correctBoundaryConditions();
-
-        phi = fvc::flux(V);
+        system_.freeParticles()[sectionI].phi() = phi;
     }
 }
 

@@ -21,14 +21,6 @@ class capturedParticleSection
 :
     public particleSection
 {
-    // Private data
-
-        //- Captured particle velocity
-        const volVectorField& V_;
-
-        //- Captured particle flux
-        const surfaceScalarField& phi_;
-
 public:
 
     // Constructors
@@ -46,24 +38,12 @@ public:
 
     // Member Functions
 
-        //- Return the captured particle velocity field
-        inline const volVectorField& V() const
-        {
-            return V_;
-        }
-
-        //- Return the captured particle flux field
-        inline const surfaceScalarField& phi() const
-        {
-            return phi_;
-        }
-
-        word particleType()
+        word particleType() const
         {
             return "captured";
         }
 
-        word particleTypeShort()
+        word particleTypeShort() const
         {
             return "c";
         }

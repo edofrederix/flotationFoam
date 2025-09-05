@@ -10,9 +10,7 @@ Foam::capturedParticleSection::capturedParticleSection
     const flotationSystem& system
 )
 :
-    particleSection(sectionNum, system),
-    V_(system.twoPhasePair().dispersed().U()),
-    phi_(system.twoPhasePair().dispersed().phi())
+    particleSection(sectionNum, system)
 {
     this->read();
 }
@@ -22,8 +20,5 @@ Foam::capturedParticleSection::capturedParticleSection
 
 Foam::capturedParticleSection::~capturedParticleSection()
 {}
-
-
-// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 // ************************************************************************* //

@@ -1,5 +1,6 @@
 #include "particleSection.H"
 #include "flotationSystem.H"
+#include "fvcReconstruct.H"
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -108,13 +109,13 @@ void Foam::particleSection::read()
 
     system_.mesh().schemes().setFluxRequired(N_->name());
 
-    Phi_.set
+    phi_.set
     (
         new surfaceScalarField
         (
             IOobject
             (
-                IOobject::groupName("Phi"+particleTypeShort(), sectionName()),
+                IOobject::groupName("phi"+particleTypeShort(), sectionName()),
                 system_.mesh().time().time().name(),
                 system_.mesh(),
                 IOobject::NO_READ,
@@ -123,12 +124,41 @@ void Foam::particleSection::read()
             system_.mesh(),
             dimensionedScalar
             (
-                IOobject::groupName("Phi"+particleTypeShort(), sectionName()),
+                IOobject::groupName("phi"+particleTypeShort(), sectionName()),
+                dimVelocity*dimArea,
+                0.0
+            )
+        )
+    );
+
+    phiN_.set
+    (
+        new surfaceScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("phiN"+particleTypeShort(), sectionName()),
+                system_.mesh().time().time().name(),
+                system_.mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            system_.mesh(),
+            dimensionedScalar
+            (
+                IOobject::groupName("phiN"+particleTypeShort(), sectionName()),
                 dimVelocity*dimArea/dimVolume,
                 0.0
             )
         )
     );
+}
+
+Foam::tmp<Foam::volVectorField> Foam::particleSection::V() const
+{
+    tmp<volVectorField> tV(fvc::reconstruct(phi()));
+    tV->rename(IOobject::groupName("V"+particleTypeShort(), sectionName()));
+    return tV;
 }
 
 // ************************************************************************* //

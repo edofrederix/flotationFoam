@@ -176,7 +176,8 @@ public:
                 return capturedParticles_;
             }
 
-            inline const PtrList<capturedParticleSection>& capturedParticles() const
+            inline const PtrList<capturedParticleSection>&
+            capturedParticles() const
             {
                 return capturedParticles_;
             }

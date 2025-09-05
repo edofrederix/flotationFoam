@@ -19,14 +19,6 @@ class freeParticleSection
 :
     public particleSection
 {
-    // Private data
-
-        //- Free particle velocity field
-        autoPtr<volVectorField> V_;
-
-        //- Free particle flux field
-        surfaceScalarField phi_;
-
 public:
 
     // Constructors
@@ -44,40 +36,16 @@ public:
 
     // Member Functions
 
-        //- Return the free particle velocity field
-        inline volVectorField& V()
-        {
-            return V_();
-        }
-
-        inline const volVectorField& V() const
-        {
-            return V_();
-        }
-
-        //- Return the free particle flux field
-        inline surfaceScalarField& phi()
-        {
-            return phi_;
-        }
-
-        inline const surfaceScalarField& phi() const
-        {
-            return phi_;
-        }
-
         //- Provide the particle type
-        word particleType()
+        word particleType() const
         {
             return "free";
         }
 
-        word particleTypeShort()
+        word particleTypeShort() const
         {
             return "f";
         }
-
-        virtual void read();
 };
 
 
