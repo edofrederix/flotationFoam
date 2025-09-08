@@ -106,7 +106,8 @@ public:
         flotationSystem
         (
             const phaseSystem& fluid,
-            const fvMesh& mesh
+            const fvMesh& mesh,
+            const word dictName = ""
         );
 
 

@@ -29,13 +29,26 @@ Foam::fv::flotation::flotation
     const dictionary& dict
 )
 :
-    fvModel(name, modelType, mesh, dict),
-    system_
-    (
-        mesh.lookupObject<phaseSystem>("phaseProperties"),
-        mesh
-    )
-{}
+    fvModel(name, modelType, mesh, dict)
+{
+    const phaseSystem& fluid =
+        mesh.lookupObject<phaseSystem>("phaseProperties");
+
+    if (dict.found("dict"))
+    {
+        system_.reset
+        (
+            new flotationSystem(fluid, mesh, word(dict.lookup("dict")))
+        );
+    }
+    else
+    {
+        system_.reset
+        (
+            new flotationSystem(fluid, mesh)
+        );
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
@@ -50,7 +63,7 @@ void Foam::fv::flotation::correct()
 {
     if (mesh().time().timeIndex() > 1)
     {
-        system_.solve();
+        system_->solve();
     }
 }
 

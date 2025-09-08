@@ -9,14 +9,15 @@
 Foam::flotationSystem::flotationSystem
 (
     const phaseSystem& fluid,
-    const fvMesh& mesh
+    const fvMesh& mesh,
+    const word dictName
 )
 :
     IOdictionary
     (
         IOobject
         (
-            "flotationProperties",
+            dictName == "" ? "flotationProperties" : dictName,
             mesh.time().constant(),
             mesh,
             IOobject::MUST_READ_IF_MODIFIED,

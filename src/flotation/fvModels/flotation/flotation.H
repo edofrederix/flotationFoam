@@ -22,7 +22,7 @@ class flotation
     // Private data
 
         //- Particle flotation system
-        flotationSystem system_;
+        autoPtr<flotationSystem> system_;
 
 
 public:
