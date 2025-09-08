@@ -49,13 +49,13 @@ void Foam::particleVelocityModels::localEquilibrium::update()
     );
 
     const surfaceScalarField& phi =
-        system_.twoPhasePair().continuous().phi();
+        system_.phasePair().continuous().phi();
 
     const surfaceScalarField rho
     (
         fvc::interpolate
         (
-            system_.twoPhasePair().continuous().rho()
+            system_.phasePair().continuous().rho()
         )
     );
 
@@ -63,7 +63,7 @@ void Foam::particleVelocityModels::localEquilibrium::update()
     (
         fvc::interpolate
         (
-            system_.twoPhasePair().continuous().fluidThermo().nu()
+            system_.phasePair().continuous().fluidThermo().nu()
         )
     );
 

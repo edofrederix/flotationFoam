@@ -46,7 +46,7 @@ Foam::collisionEfficiencyModels::WeberPaddockCollision::efficiency
 
     volScalarField& P = tP.ref();
 
-    tmp<volScalarField> Re(system_.twoPhasePair().Re());
+    tmp<volScalarField> Re(system_.phasePair().Re());
 
     P = clip
     (

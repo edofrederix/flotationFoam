@@ -10,3 +10,25 @@ flotation
 {
     type            flotation;
 }
+
+phaseTurbulenceStabilisationAir
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libmultiphaseEulerFvModels.so");
+
+    phase   air;
+
+    alphaInversion  0.1;
+}
+
+phaseTurbulenceStabilisationWater
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libmultiphaseEulerFvModels.so");
+
+    phase   water;
+
+    alphaInversion  0.1;
+}

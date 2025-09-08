@@ -28,8 +28,4 @@ boundaryField
         type            fixedFluxPressure;
         value           $internalField;
     }
-    empties
-    {
-        type            empty;
-    }
 }

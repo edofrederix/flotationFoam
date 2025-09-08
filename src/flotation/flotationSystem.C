@@ -76,7 +76,7 @@ Foam::flotationSystem::flotationSystem
             << abort(FatalError);
     }
 
-    twoPhasePair_.set
+    phasePair_.set
     (
         new dispersedPhaseInterface
         (
@@ -295,11 +295,11 @@ void Foam::flotationSystem::solve()
 
     const scalar pi(constant::mathematical::pi);
 
-    const volScalarField db(twoPhasePair().dispersed().d());
+    const volScalarField db(phasePair().dispersed().d());
 
     const volScalarField B
     (
-        twoPhasePair().dispersed()*6.0 / (pi*Foam::pow(db, 3.0))
+        phasePair().dispersed()*6.0 / (pi*Foam::pow(db, 3.0))
     );
 
     // Compute bubble loading parameter (only once per time step)
@@ -487,7 +487,7 @@ Foam::flotationSystem::continuousTurbulence() const
             IOobject::groupName
             (
                 momentumTransportModel::typeName,
-                twoPhasePair().continuous().name()
+                phasePair().continuous().name()
             )
         );
 }

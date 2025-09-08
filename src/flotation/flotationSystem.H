@@ -48,7 +48,7 @@ class flotationSystem
         dimensionedScalar Sct_;
 
         //- Phase pair for dispersed phase in continuous phase
-        autoPtr<dispersedPhaseInterface> twoPhasePair_;
+        autoPtr<dispersedPhaseInterface> phasePair_;
 
         //- Sectional distribution
         autoPtr<sectionalDistribution> distribution_;
@@ -143,9 +143,9 @@ public:
             }
 
             //- Return the ordered phase pair
-            inline const dispersedPhaseInterface& twoPhasePair() const
+            inline const dispersedPhaseInterface& phasePair() const
             {
-                return twoPhasePair_();
+                return phasePair_();
             }
 
             //- Return the sectional distribution
@@ -196,19 +196,19 @@ public:
             //- Diameter-based bubble Reynolds number
             inline tmp<volScalarField> Re() const
             {
-                return twoPhasePair().Re();
+                return phasePair().Re();
             }
 
             //- Diameter-based bubble Eötvös number
             inline tmp<volScalarField> Eo() const
             {
-                return twoPhasePair().Eo();
+                return phasePair().Eo();
             }
 
             //- Schmidt number given the particle diffusivity
             inline tmp<volScalarField> Sc(const volScalarField& D) const
             {
-                return twoPhasePair().continuous().fluidThermo().nu()/D;
+                return phasePair().continuous().fluidThermo().nu()/D;
             }
 };
 

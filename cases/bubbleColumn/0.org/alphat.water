@@ -30,9 +30,4 @@ boundaryField
         Prt             0.85;
         value           $internalField;
     }
-
-    empties
-    {
-        type            empty;
-    }
 }

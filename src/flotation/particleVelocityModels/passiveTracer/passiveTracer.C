@@ -40,7 +40,7 @@ Foam::particleVelocityModels::passiveTracer::~passiveTracer()
 
 void Foam::particleVelocityModels::passiveTracer::update()
 {
-    const surfaceScalarField& phi = system_.twoPhasePair().continuous().phi();
+    const surfaceScalarField& phi = system_.phasePair().continuous().phi();
 
     forAll(system_.freeParticles(), sectionI)
     {

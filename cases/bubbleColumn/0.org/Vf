@@ -27,8 +27,4 @@ boundaryField
         type            calculated;
         value           $internalField;
     }
-    empties
-    {
-        type            empty;
-    }
 }

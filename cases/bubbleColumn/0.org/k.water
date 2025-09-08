@@ -31,9 +31,4 @@ boundaryField
         type            kqRWallFunction;
         value           $internalField;
     }
-
-    empties
-    {
-        type            empty;
-    }
 }

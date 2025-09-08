@@ -48,7 +48,7 @@ Foam::BrownianAttachmentModels::infiniteSink::rate
 
     volScalarField& B = tB.ref();
 
-    const volScalarField db(system_.twoPhasePair().dispersed().d());
+    const volScalarField db(system_.phasePair().dispersed().d());
 
     const volScalarField Ds
     (

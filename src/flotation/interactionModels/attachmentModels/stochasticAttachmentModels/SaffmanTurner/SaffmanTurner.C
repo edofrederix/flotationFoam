@@ -48,13 +48,13 @@ Foam::stochasticAttachmentModels::SaffmanTurner::rate
 
     const dimensionedScalar ds(system_.distribution()[sectionI]);
 
-    tmp<volScalarField> db(system_.twoPhasePair().dispersed().d());
+    tmp<volScalarField> db(system_.phasePair().dispersed().d());
 
     const volScalarField& epsilon =
         system_.continuousTurbulence().epsilon();
 
     const volScalarField& nu =
-        system_.twoPhasePair().continuous().fluidThermo().nu();
+        system_.phasePair().continuous().fluidThermo().nu();
 
     S = 0.1625 * Foam::pow(db+ds, 3.0) * sqrt(epsilon/nu);
 

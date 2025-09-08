@@ -48,7 +48,7 @@ Foam::stochasticDetachmentModels::BloomHeindel::rate
 
     const dimensionedScalar ds(system_.distribution()[sectionI]);
 
-    tmp<volScalarField> db(system_.twoPhasePair().dispersed().d());
+    tmp<volScalarField> db(system_.phasePair().dispersed().d());
 
     const volScalarField& epsilon =
         system_.continuousTurbulence().epsilon();

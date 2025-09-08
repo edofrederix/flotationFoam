@@ -46,7 +46,7 @@ Foam::collisionEfficiencyModels::YoonLuttrellIntermediateCollision::efficiency
 
     volScalarField& P = tP.ref();
 
-    tmp<volScalarField> Re(system_.twoPhasePair().Re());
+    tmp<volScalarField> Re(system_.phasePair().Re());
 
     P = clip(Foam::sqr(R(sectionI))*(1.5+4.0/15.0*Foam::pow(Re,0.72)));
 

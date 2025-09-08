@@ -93,7 +93,7 @@ Foam::tmp<Foam::volScalarField> Foam::efficiencyModel::R
 {
     return
         system_.distribution()[sectionI]
-      / system_.twoPhasePair().dispersed().d();
+      / system_.phasePair().dispersed().d();
 }
 
 // ************************************************************************* //

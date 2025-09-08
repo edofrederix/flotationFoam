@@ -50,9 +50,9 @@ Foam::deterministicAttachmentModels::spherical::rate
 
     const scalar pi(constant::mathematical::pi);
 
-    tmp<volScalarField> db(system_.twoPhasePair().dispersed().d());
+    tmp<volScalarField> db(system_.phasePair().dispersed().d());
 
-    const volVectorField& U = system_.twoPhasePair().dispersed().U();
+    const volVectorField& U = system_.phasePair().dispersed().U();
     const volVectorField V(system_.freeParticles()[sectionI].V());
 
     D = 0.25 * pi * sqr(db + ds) * mag(U-V);

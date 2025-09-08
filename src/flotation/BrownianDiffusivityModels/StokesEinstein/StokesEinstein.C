@@ -69,12 +69,12 @@ Foam::BrownianDiffusivityModels::StokesEinstein::D
 
     const volScalarField mul
     (
-        system_.twoPhasePair().continuous().fluidThermo().mu()
+        system_.phasePair().continuous().fluidThermo().mu()
     );
 
     const volScalarField T
     (
-        system_.twoPhasePair().continuous().thermo().T()
+        system_.phasePair().continuous().thermo().T()
     );
 
     const dimensionedScalar ds(system_.distribution()[sectionI]);

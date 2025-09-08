@@ -35,3 +35,5 @@ rm -f 0/*.m4
 runApplication blockMesh
 
 runApplication setLogNormal air $SIGMA $DSM
+
+runApplication decomposePar

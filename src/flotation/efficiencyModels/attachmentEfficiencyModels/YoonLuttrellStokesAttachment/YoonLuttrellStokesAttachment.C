@@ -46,9 +46,9 @@ Foam::attachmentEfficiencyModels::YoonLuttrellStokesAttachment::efficiency
 
     volScalarField& P = tP.ref();
 
-    tmp<volScalarField> db(system_.twoPhasePair().dispersed().d());
+    tmp<volScalarField> db(system_.phasePair().dispersed().d());
 
-    const volScalarField Ub(mag(system_.twoPhasePair().dispersed().U()));
+    const volScalarField Ub(mag(system_.phasePair().dispersed().U()));
 
     const dimensionedScalar ti
     (

@@ -27,8 +27,4 @@ boundaryField
     {
         type            noSlip;
     }
-    empties
-    {
-        type            empty;
-    }
 }
