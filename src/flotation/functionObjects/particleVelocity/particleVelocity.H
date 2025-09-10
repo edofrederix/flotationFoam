@@ -29,6 +29,12 @@ class particleVelocity
         //- Section number
         label sectionNum_;
 
+        //- Dictionary name (defaults to flotationProperties)
+        word dictName_;
+
+        //- Name of the phase to which the particles belong
+        word phaseName_;
+
     // Private Member Functions
 
         //- Calculate the particleVelocity field and return true if successful

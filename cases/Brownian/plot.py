@@ -43,21 +43,21 @@ fs.prep(plt, figSize)
 
 # Plot
 
-data = np.loadtxt('postProcessing/Nfs/0/volFieldValue.dat')
+data = np.loadtxt('postProcessing/N/0/volFieldValue.dat')
 
 t = data[:,0]
 
-fig = plt.figure('Nf')
+fig = plt.figure('N')
 
 ks = np.zeros(len(ds))
 
 for i,d in enumerate(ds):
 
-    Nf = data[:,i+1]
+    N = data[:,i*2+1]
 
-    plt.plot(t/3600, Nf/N0, lw=1.5, label='flotationFoam' if i == 0 else None)
+    plt.plot(t/3600, N/N0, lw=1.5, label='flotationFoam' if i == 0 else None)
 
-    ks[i] = -np.log(Nf[-1]/N0)/t[-1]
+    ks[i] = -np.log(N[-1]/N0)/t[-1]
 
 # Analytical solution, based on Mishchuk et al. (2012)
 
@@ -128,15 +128,15 @@ plt.plot(np.array(ds)*1e9, ksa, '-ok', lw=0.5, ms=3, mew=0.25, mec='white', labe
 
 # Style/save
 
-fig = plt.figure('Nf');
+fig = plt.figure('N');
 
 plt.xlabel(r'$t$ [h]')
 plt.ylabel(r'$N_f/N_0$')
 
 fs.post(fig, figSize, plt.legend())
 
-plt.savefig('Nf.pdf')
-plt.savefig('Nf.png', dpi=512)
+plt.savefig('N.pdf')
+plt.savefig('N.png', dpi=512)
 
 ##
 

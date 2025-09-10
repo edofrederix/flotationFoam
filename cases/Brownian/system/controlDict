@@ -17,7 +17,7 @@ startTime       0;
 
 stopAt          endTime;
 
-endTime         7200;
+endTime         3600;
 
 deltaT          0.001;
 
@@ -56,7 +56,7 @@ libs
 
 functions
 {
-    Ncs
+    N
     {
         type            volFieldValue;
         libs            ("libfieldFunctionObjects.so");
@@ -71,26 +71,7 @@ functions
 
         fields
         (
-            #include "Ncs"
-        );
-    }
-
-    Nfs
-    {
-        type            volFieldValue;
-        libs            ("libfieldFunctionObjects.so");
-
-        cellZone        all;
-
-        writeControl    timeStep;
-        log             no;
-        writeFields     no;
-
-        operation       volIntegrate;
-
-        fields
-        (
-            #include "Nfs"
+            #include "fields"
         );
     }
 }

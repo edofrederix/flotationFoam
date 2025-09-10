@@ -1,4 +1,5 @@
 #include "localEquilibrium.H"
+#include "particleModel.H"
 #include "flotationSystem.H"
 #include "addToRunTimeSelectionTable.H"
 #include "fvc.H"
@@ -11,73 +12,66 @@ namespace Foam
 namespace particleVelocityModels
 {
     defineTypeNameAndDebug(localEquilibrium, 0);
-    addToRunTimeSelectionTable(particleVelocityModel, localEquilibrium, dictionary);
+    addToRunTimeSelectionTable
+    (
+        particleVelocityModel,
+        localEquilibrium,
+        dictionary
+    );
 }
 }
-
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::particleVelocityModels::localEquilibrium::localEquilibrium
 (
-    const dictionary& dict,
-    const fvMesh& mesh,
-    flotationSystem& system,
-    const bool registerObject
+    particleModel& model,
+    const dictionary& dict
 )
 :
-    particleVelocityModel(dict, mesh, system, registerObject)
+    particleVelocityModel(model, dict)
 {}
-
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::particleVelocityModels::localEquilibrium::~localEquilibrium()
 {}
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::particleVelocityModels::localEquilibrium::update()
+void Foam::particleVelocityModels::localEquilibrium::correct()
 {
-    const dimensionedScalar& rhop = system_.rho();
+    const dimensionedScalar& rhop = model_.system().rho();
 
     const surfaceScalarField gAf
     (
-        system_.mesh().lookupObject<uniformDimensionedVectorField>("g")
-      & system_.mesh().Sf()
+        model_.system().mesh().lookupObject<uniformDimensionedVectorField>("g")
+      & model_.system().mesh().Sf()
     );
 
-    const surfaceScalarField& phi =
-        system_.phasePair().continuous().phi();
+    const surfaceScalarField& phi = model_.phase().phi();
 
-    const surfaceScalarField rho
-    (
-        fvc::interpolate
-        (
-            system_.phasePair().continuous().rho()
-        )
-    );
+    const surfaceScalarField rho(fvc::interpolate(model_.phase().rho()));
 
     const surfaceScalarField nu
     (
         fvc::interpolate
         (
-            system_.phasePair().continuous().fluidThermo().nu()
+            model_.phase().fluidThermo().nu()
         )
     );
 
     const scalar steadyState =
         dict_.lookupOrDefault<Switch>("steadyState", false);
 
-    forAll(system_.freeParticles(), sectionI)
+    forAll(model_, i)
     {
-        const dimensionedScalar d(system_.distribution()[sectionI]);
+        const dimensionedScalar dp(model_.system().distribution()[i]);
 
-        const surfaceScalarField tau(rhop/rho*sqr(d)/(18.0*nu));
+        const surfaceScalarField tau(rhop/rho*sqr(dp)/(18.0*nu));
         const surfaceScalarField ddt(fvc::ddt(phi));
 
-        system_.freeParticles()[sectionI].phi() =
+        model_[i].phi() =
             phi + ((1.0 - rho/rhop)*gAf - (1.0 - steadyState)*ddt)*tau;
     }
 }

@@ -11,13 +11,13 @@ flotation
     type    flotation;
 }
 
-phaseTurbulenceStabilisationAir
+phaseTurbulenceStabilisationNitrogen
 {
     type    phaseTurbulenceStabilisation;
 
     libs    ("libmultiphaseEulerFvModels.so");
 
-    phase   air;
+    phase   nitrogen;
 
     alphaInversion  0.1;
 }

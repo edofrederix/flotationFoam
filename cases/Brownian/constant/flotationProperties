@@ -7,76 +7,53 @@ FoamFile
     object      flotationParticleProperties;
 }
 
-rho                 1E4;
-Sct                 1.0;
+rho         1E4;
+interface   water_air;
 
-continuousPhaseName water;
-dispersedPhaseName  air;
-
-sectionalDistribution
+distribution
 {
     type        sectionalList;
     diameters   (1e-9 2e-9 4e-9 8e-9 1.6e-8 3.2e-8 6.4e-8 1.28e-7 2.56e-7 5.12e-7 1.024e-6 2.048e-6);
 }
 
-particleVelocityModel
+particles_in_air
 {
-    type        passiveTracer;
+    Sct     1.0;
+
+    velocity
+    {
+        type    passiveTracer;
+    }
+
+    diffusivity
+    {
+        type    constant;
+        D       0;
+    }
+
+    models
+    ();
 }
 
-BrownianDiffusivityModel
+particles_in_water
 {
-    type        StokesEinstein;
-}
+    Sct     1.0;
 
-efficiencyModels
-{
-    collisions
+    velocity
     {
-        type    ideal;
+        type    passiveTracer;
     }
-    attachment
-    {
-        type    ideal;
 
-        inductionTime
-        {
-            type    none;
-        }
-    }
-    stabilization
+    diffusivity
     {
-        type    ideal;
+        type    StokesEinstein;
     }
-}
 
-interactionModels
-{
-    attachment
-    {
-        deterministic
+    models
+    (
+        dispersedBrownianDeposition
         {
-            type    none;
+            Sh  RanzMarshall;
         }
-        stochastic
-        {
-            type    none;
-        }
-        Brownian
-        {
-            type    infiniteSink;
-
-            SherwoodCorrelation
-            {
-                type    RanzMarshall;
-            }
-        }
-    }
-    detachment
-    {
-        stochastic
-        {
-            type    none;
-        }
-    }
+    );
 }

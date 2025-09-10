@@ -33,10 +33,8 @@ public:
         //- Construct from a dictionary and a mesh
         passiveTracer
         (
-            const dictionary& dict,
-            const fvMesh& mesh,
-            flotationSystem& system,
-            const bool registerObject
+            particleModel& model,
+            const dictionary& dict
         );
 
 
@@ -47,7 +45,7 @@ public:
     // Member Functions
 
         //- Update the particle velocities
-        virtual void update();
+        virtual void correct();
 };
 
 

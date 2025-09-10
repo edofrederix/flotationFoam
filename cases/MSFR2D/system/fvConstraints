@@ -23,7 +23,7 @@ limitHeliumT
 
     phase       helium;
 }
-    
+
 limitSaltT
 {
     type        limitTemperature;
@@ -35,4 +35,4 @@ limitSaltT
 
     phase       salt;
 }
-    
+

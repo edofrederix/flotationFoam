@@ -7,80 +7,69 @@ FoamFile
     object      flotationParticleProperties;
 }
 
-rho                 2600;
-Sct                 1.0;
+rho         2000;
+interface   water_nitrogen;
 
-continuousPhaseName water;
-dispersedPhaseName  nitrogen;
-
-sectionalDistribution
+distribution
 {
     type        sectionalList;
     diameters   (1e-9 2e-9 4e-9 8e-9 1.6e-8 3.2e-8 6.4e-8 1.28e-7 2.56e-7 5.12e-7 1.024e-6 2.048e-6 4.069e-6 8.138e-6 1.6276e-5 3.2552e-5);
 }
 
-particleVelocityModel
+particles_in_nitrogen
 {
-    type        localEquilibrium;
-    steadyState false;
+    Sct     1.0;
+    silent  false;
+
+    velocity
+    {
+        type    passiveTracer;
+    }
+
+    diffusivity
+    {
+        type    constant;
+        D       0;
+    }
+
+    models
+    ();
 }
 
-BrownianDiffusivityModel
+particles_in_water
 {
-    type        StokesEinstein;
-    f           5.0;
-}
+    Sct     1.0;
+    silent  false;
 
-efficiencyModels
-{
-    collisions
+    velocity
     {
-        type    Sutherland;
+        type        localEquilibrium;
+        steadyState true;
     }
-    attachment
-    {
-        type    Sutherland;
 
-        inductionTime
-        {
-            type    Dai;
-            A       2;
-            B       0.6;
-        }
+    diffusivity
+    {
+        type    StokesEinstein;
+        f       5.0;
     }
-    stabilization
-    {
-        type    ideal;
-    }
-}
 
-interactionModels
-{
-    attachment
-    {
-        deterministic
+    models
+    (
+        dispersedInterception
         {
-            type    spherical;
-        }
-        stochastic
-        {
-            type    none;
-        }
-        Brownian
-        {
-            type    infiniteSink;
+            type    Sutherland;
 
-            SherwoodCorrelation
+            inductionTime
             {
-                type    RanzMarshall;
+                type    Dai;
+                A       2;
+                B       0.6;
             }
         }
-    }
-    detachment
-    {
-        stochastic
+
+        dispersedBrownianDeposition
         {
-            type    none;
+            Sh  RanzMarshall;
         }
-    }
+    );
 }

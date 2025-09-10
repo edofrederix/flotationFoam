@@ -2,23 +2,10 @@
 #define flotationSystem_H
 
 #include "IOdictionary.H"
-#include "volFields.H"
 #include "phaseSystem.H"
-#include "dispersedPhaseInterface.H"
-#include "phaseCompressibleMomentumTransportModel.H"
-
-#include "sectionalDistribution.H"
-#include "freeParticleSection.H"
-#include "capturedParticleSection.H"
-#include "particleVelocityModel.H"
-#include "BrownianDiffusivityModel.H"
-#include "collisionEfficiencyModel.H"
-#include "attachmentEfficiencyModel.H"
-#include "stabilizationEfficiencyModel.H"
-#include "deterministicAttachmentModel.H"
-#include "stochasticAttachmentModel.H"
-#include "BrownianAttachmentModel.H"
-#include "stochasticDetachmentModel.H"
+#include "phaseInterface.H"
+#include "particleSizeDistribution.H"
+#include "particleModel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,61 +31,27 @@ class flotationSystem
         //- Particle density
         dimensionedScalar rho_;
 
-        //- Turbulent Schmidt number
-        dimensionedScalar Sct_;
+        //- Number of corrections (defaults to 2)
+        label nCorr_;
 
-        //- Phase pair for dispersed phase in continuous phase
-        autoPtr<dispersedPhaseInterface> phasePair_;
+        //- Phase interface
+        phaseInterface interface_;
 
         //- Sectional distribution
-        autoPtr<sectionalDistribution> distribution_;
+        autoPtr<particleSizeDistribution> distribution_;
 
-        //- List of free particle sections
-        PtrList<freeParticleSection> freeParticles_;
-
-        //- List of captured particle sections
-        PtrList<capturedParticleSection> capturedParticles_;
-
-        //- Particle velocity model
-        autoPtr<particleVelocityModel> particleVelocity_;
-
-        //- Brownian diffusivity model
-        autoPtr<BrownianDiffusivityModel> BrownDiff_;
-
-        //- Particle collision efficiency model
-        autoPtr<collisionEfficiencyModel> colEff_;
-
-        //- Particle attachment efficiency model
-        autoPtr<attachmentEfficiencyModel> attEff_;
-
-        //- Particle stabilization efficiency model
-        autoPtr<stabilizationEfficiencyModel> stabEff_;
-
-        //- Deterministic attachment model
-        autoPtr<deterministicAttachmentModel> detAttachRate_;
-
-        //- Stochastic attachment model
-        autoPtr<stochasticAttachmentModel> stochAttachRate_;
-
-        //- Brownian attachment model
-        autoPtr<BrownianAttachmentModel> BrownAttachRate_;
-
-        //- Stochastic detachment model
-        autoPtr<stochasticDetachmentModel> stochDetachRate_;
-
-        //- Collision efficiencies
-        PtrList<volScalarField> Pcol_;
-
-        //- Attachment efficiencies
-        PtrList<volScalarField> Patt_;
-
-        //- Stabilization efficiencies
-        PtrList<volScalarField> Pstab_;
-
-    // Private member functions
-
+        //- First and second phase particle model
+        PtrList<particleModel> particleModels_;
 
 public:
+
+    //- Return the section index from a field whose name is in the format <field
+    //  name>.<phase name>:<section number>. Note that the returned number is
+    //  subtracted by 1 so that the first number is zero.
+    static label sectionNum(const volScalarField&);
+
+    //- Runtime type information
+    TypeName("flotationSystem");
 
     // Constructors
 
@@ -143,74 +96,63 @@ public:
                 return rho_;
             }
 
-            //- Return the ordered phase pair
-            inline const dispersedPhaseInterface& phasePair() const
+            //- Return the phase interface
+            inline const phaseInterface& interface() const
             {
-                return phasePair_();
+                return interface_;
             }
 
-            //- Return the sectional distribution
-            inline sectionalDistribution& distribution()
-            {
-                return distribution_();
-            }
-
-            inline const sectionalDistribution& distribution() const
+            //- Return the particle size distribution
+            inline particleSizeDistribution& distribution()
             {
                 return distribution_();
             }
 
-            //- Return the list of free particle sections
-            inline PtrList<freeParticleSection>& freeParticles()
+            inline const particleSizeDistribution& distribution() const
             {
-                return freeParticles_;
+                return distribution_();
             }
 
-            inline const PtrList<freeParticleSection>& freeParticles() const
+            //- Return the list of particle models for each phase
+            inline PtrList<particleModel>& models()
             {
-                return freeParticles_;
+                return particleModels_;
             }
 
-            //- Return the list of captured particle sections
-            inline PtrList<capturedParticleSection>& capturedParticles()
+            inline const PtrList<particleModel>& models() const
             {
-                return capturedParticles_;
+                return particleModels_;
             }
 
-            inline const PtrList<capturedParticleSection>&
-            capturedParticles() const
+            // Return the first phase particle model
+            inline particleModel& model1()
             {
-                return capturedParticles_;
+                return particleModels_[0];
             }
 
-            inline const BrownianDiffusivityModel& BrownDiff() const
+            inline const particleModel& model1() const
             {
-                return BrownDiff_;
+                return particleModels_[0];
             }
 
-            //- Return reference to turbulence model of the continuous phase
+            // Return the second phase particle model
+            inline particleModel& model2()
+            {
+                return particleModels_[1];
+            }
+
+            inline const particleModel& model2() const
+            {
+                return particleModels_[1];
+            }
+
+            //- Return reference to turbulence model of the first phase
             const phaseCompressible::momentumTransportModel&
-                continuousTurbulence() const;
+                firstPhaseTurbulence() const;
 
-        // Non-dimensional numbers
-
-            //- Diameter-based bubble Reynolds number
-            inline tmp<volScalarField> Re() const
-            {
-                return phasePair().Re();
-            }
-
-            //- Diameter-based bubble Eötvös number
-            inline tmp<volScalarField> Eo() const
-            {
-                return phasePair().Eo();
-            }
-
-            //- Schmidt number given the particle diffusivity
-            inline tmp<volScalarField> Sc(const volScalarField& D) const
-            {
-                return phasePair().continuous().fluidThermo().nu()/D;
-            }
+            //- Return reference to turbulence model of the second phase
+            const phaseCompressible::momentumTransportModel&
+                secondPhaseTurbulence() const;
 };
 
 

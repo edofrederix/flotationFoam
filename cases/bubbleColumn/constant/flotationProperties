@@ -7,79 +7,68 @@ FoamFile
     object      flotationParticleProperties;
 }
 
-rho                 1E4;
-Sct                 1.0;
+rho         1E4;
+interface   water_air;
 
-continuousPhaseName water;
-dispersedPhaseName  air;
-
-sectionalDistribution
+distribution
 {
     type        sectionalList;
     diameters   (1e-9 1e-8 1e-7 1e-6 1e-5 1e-4);
 }
 
-particleVelocityModel
+particles_in_air
 {
-    type        localEquilibrium;
-    steadyState true;
+    Sct     1.0;
+    silent  false;
+
+    velocity
+    {
+        type    passiveTracer;
+    }
+
+    diffusivity
+    {
+        type    constant;
+        D       0;
+    }
+
+    models
+    ();
 }
 
-BrownianDiffusivityModel
+particles_in_water
 {
-    type        StokesEinstein;
-}
+    Sct     1.0;
+    silent  false;
 
-efficiencyModels
-{
-    collisions
+    velocity
     {
-        type    YoonLuttrellIntermediate;
+        type        localEquilibrium;
+        steadyState true;
     }
-    attachment
-    {
-        type    YoonLuttrellIntermediate;
 
-        inductionTime
-        {
-            type    Dai;
-            A       0.2;
-            B       0.6;
-        }
+    diffusivity
+    {
+        type    StokesEinstein;
     }
-    stabilization
-    {
-        type    ideal;
-    }
-}
 
-interactionModels
-{
-    attachment
-    {
-        deterministic
+    models
+    (
+        dispersedInterception
         {
-            type    spherical;
-        }
-        stochastic
-        {
-            type    none;
-        }
-        Brownian
-        {
-            type    infiniteSink;
+            type    YoonLuttrellIntermediate;
 
-            SherwoodCorrelation
+            inductionTime
             {
-                type    RanzMarshall;
+                type    Dai;
+                A       0.2;
+                B       0.6;
             }
         }
-    }
-    detachment
-    {
-        stochastic
+
+        dispersedBrownianDeposition
         {
-            type    none;
+            Sh  RanzMarshall;
         }
-    }
+    );
 }

@@ -10,7 +10,7 @@ namespace Foam
 {
 
 // Forward declarations
-class flotationSystem;
+class particleModel;
 
 /*---------------------------------------------------------------------------*\
                         Class particleSection Declaration
@@ -18,8 +18,6 @@ class flotationSystem;
 
 class particleSection
 {
-    // Private data
-
 protected:
 
     // Protected data
@@ -27,11 +25,14 @@ protected:
         //- Sectional index
         const label sectionNum_;
 
-        //- Flotation particle system
-        const flotationSystem& system_;
+        //- Particle model
+        const particleModel& model_;
 
         //- Particle section number concentration field
         autoPtr<volScalarField> N_;
+
+        //- Particle diffusivity
+        autoPtr<volScalarField> D_;
 
         //- Particle velocity flux field
         autoPtr<surfaceScalarField> phi_;
@@ -47,7 +48,7 @@ public:
         particleSection
         (
             const label sectionNum,
-            const flotationSystem& system
+            const particleModel& model
         );
 
 
@@ -57,7 +58,7 @@ public:
 
     // Member Functions
 
-        //- Return the sectional name
+        //- Return the section name
         word sectionName() const;
 
         //- Read the particle concentration field
@@ -72,6 +73,17 @@ public:
         inline const volScalarField& N() const
         {
             return N_();
+        }
+
+        //- Return the particle diffusivity
+        inline volScalarField& D()
+        {
+            return D_();
+        }
+
+        inline const volScalarField& D() const
+        {
+            return D_();
         }
 
         //- Return the particle velocity flux field
@@ -96,20 +108,14 @@ public:
             return phiN_();
         }
 
-        //- Return the sectional number
-        inline const label& sectionNum() const
+        //- Return the section number
+        inline label sectionNum() const
         {
             return sectionNum_;
         }
 
         //- Return the particle velocity, calculated from the velocity flux
         virtual tmp<volVectorField> V() const;
-
-        //- Return the particle type
-        virtual word particleType() const = 0;
-
-        //- Return the particle type
-        virtual word particleTypeShort() const = 0;
 };
 
 

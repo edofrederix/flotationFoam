@@ -4,6 +4,20 @@
 #include "fvModels.H"
 #include "fvConstraints.H"
 
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+    defineTypeNameAndDebug(flotationSystem, 0);
+}
+
+// * * * * * * * * * * * * * * Static Member Functions* * * * * * * * * * * *//
+
+Foam::label Foam::flotationSystem::sectionNum(const volScalarField& f)
+{
+    return atoi(f.name().substr(f.name().find(":") + 1).c_str()) - 1;
+}
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::flotationSystem::flotationSystem
@@ -26,446 +40,81 @@ Foam::flotationSystem::flotationSystem
     ),
     fluid_(fluid),
     mesh_(mesh),
-    rho_
+    rho_("rho", dimDensity, *this),
+    nCorr_(lookupOrDefault<label>("nCorr", 2)),
+    interface_(fluid, lookup("interface")),
+    distribution_
     (
-        "rho",
-        dimDensity,
-        *this
-    ),
-    Sct_
-    (
-        "Sct",
-        dimless,
-        *this
-    )
-{
-    // Ordered phase pair
-
-    const word continuousPhaseName(lookup("continuousPhaseName"));
-    const word dispersedPhaseName(lookup("dispersedPhaseName"));
-
-    label cPhase = -1;
-    label dPhase = -1;
-
-    forAll(fluid_.phases(), i)
-    {
-        if (fluid_.phases()[i].name() == continuousPhaseName)
-        {
-            cPhase = i;
-        }
-    }
-
-    if (cPhase == -1)
-    {
-        FatalErrorInFunction
-            << "Continuous phase " << continuousPhaseName << " not found"
-            << abort(FatalError);
-    }
-
-    forAll(fluid_.phases(), i)
-    {
-        if (fluid.phases()[i].name() == dispersedPhaseName)
-        {
-            dPhase = i;
-        }
-    }
-
-    if (cPhase == -1)
-    {
-        FatalErrorInFunction
-            << "Dispersed phase " << dispersedPhaseName << " not found"
-            << abort(FatalError);
-    }
-
-    phasePair_.set
-    (
-        new dispersedPhaseInterface
+        particleSizeDistribution::New
         (
-            fluid_.phases()[dPhase],
-            fluid_.phases()[cPhase]
-        )
-    );
-
-    // Set sectional distribution
-
-    distribution_.set
-    (
-        sectionalDistribution::New
-        (
-            subDict("sectionalDistribution"),
+            subDict("distribution"),
             mesh
         ).ptr()
-    );
+    ),
+    particleModels_(2)
+{
+    // Set the particle model for each side of the interface
 
-    // Create particle sections
-
-    freeParticles_.setSize(distribution().size());
-    capturedParticles_.setSize(distribution().size());
-
-    forAll(distribution(), sectionI)
-    {
-        freeParticles_.set
-        (
-            sectionI,
-            new freeParticleSection(sectionI+1, *this)
-        );
-
-        capturedParticles_.set
-        (
-            sectionI,
-            new capturedParticleSection(sectionI+1, *this)
-        );
-    }
-
-    // Set the particle velocity model
-
-    particleVelocity_.set
-    (
-        particleVelocityModel::New
-        (
-            subDict("particleVelocityModel"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    // Set the Brownian diffusivity model
-
-    BrownDiff_.set
-    (
-        BrownianDiffusivityModel::New
-        (
-            subDict("BrownianDiffusivityModel"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    // Set the efficiency models
-
-    colEff_.set
-    (
-        collisionEfficiencyModel::New
-        (
-            subDict("efficiencyModels").subDict("collisions"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    attEff_.set
-    (
-        attachmentEfficiencyModel::New
-        (
-            subDict("efficiencyModels").subDict("attachment"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    stabEff_.set
-    (
-        stabilizationEfficiencyModel::New
-        (
-            subDict("efficiencyModels").subDict("stabilization"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    // Set the interaction models
-
-    detAttachRate_.set
-    (
-        deterministicAttachmentModel::New
-        (
-            subDict("interactionModels").subDict("attachment").subDict("deterministic"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    stochAttachRate_.set
-    (
-        stochasticAttachmentModel::New
-        (
-            subDict("interactionModels").subDict("attachment").subDict("stochastic"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    BrownAttachRate_.set
-    (
-        BrownianAttachmentModel::New
-        (
-            subDict("interactionModels").subDict("attachment").subDict("Brownian"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    stochDetachRate_.set
-    (
-        stochasticDetachmentModel::New
-        (
-            subDict("interactionModels").subDict("detachment").subDict("stochastic"),
-            mesh,
-            *this
-        ).ptr()
-    );
-
-    // Set the efficiency fields
-
-    Pcol_.setSize(distribution().size());
-    Patt_.setSize(distribution().size());
-    Pstab_.setSize(distribution().size());
-
-    forAll(distribution(), sectionI)
-    {
-        Pcol_.set
-        (
-            sectionI,
-            new volScalarField
-            (
-                IOobject
-                (
-                    IOobject::groupName("Pcol", Foam::name(sectionI+1)),
-                    mesh.time().time().name(),
-                    mesh,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE
-                ),
-                mesh,
-                dimensionedScalar("Pcol", dimless, 0.0)
-            )
-        );
-
-        Patt_.set
-        (
-            sectionI,
-            new volScalarField
-            (
-                IOobject
-                (
-                    IOobject::groupName("Patt", Foam::name(sectionI+1)),
-                    mesh.time().time().name(),
-                    mesh,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE
-                ),
-                mesh,
-                dimensionedScalar("Patt", dimless, 0.0)
-            )
-        );
-
-        Pstab_.set
-        (
-            sectionI,
-            new volScalarField
-            (
-                IOobject
-                (
-                    IOobject::groupName("Pstab", Foam::name(sectionI+1)),
-                    mesh.time().time().name(),
-                    mesh,
-                    IOobject::NO_READ,
-                    IOobject::NO_WRITE
-                ),
-                mesh,
-                dimensionedScalar("Pstab", dimless, 0.0)
-            )
-        );
-    }
+    particleModels_.set(0, new particleModel(*this, interface_.phase1()));
+    particleModels_.set(1, new particleModel(*this, interface_.phase2()));
 }
-
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::flotationSystem::~flotationSystem()
 {}
 
-
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
 void Foam::flotationSystem::solve()
 {
-    particleVelocity_->update();
+    // Solve
 
-    const volScalarField nut(continuousTurbulence().nut());
+    scalarList r0(distribution_->size(), 0.0);
+    scalarList r(distribution_->size(), 0.0);
+    labelList iters(distribution_->size(), 0);
 
-    const scalar pi(constant::mathematical::pi);
-
-    const volScalarField db(phasePair().dispersed().d());
-
-    const volScalarField B
-    (
-        phasePair().dispersed()*6.0 / (pi*Foam::pow(db, 3.0))
-    );
-
-    // Compute bubble loading parameter (only once per time step)
-
-    tmp<volScalarField> tbeta
-    (
-        new volScalarField
-        (
-            IOobject
-            (
-                "beta",
-                mesh_.time().time().name(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-            mesh_,
-            dimensionedScalar("beta", dimless, 0.0)
-        )
-    );
-
-    volScalarField& beta = tbeta.ref();
-
-    const dimensionedScalar SB(B.name(), B.dimensions(), SMALL);
-
-    forAll(distribution(), sectionI)
+    label iter;
+    for (iter = 0; iter < nCorr_; iter++)
     {
-        volScalarField& Nc = capturedParticles_[sectionI].N();
-
-        const dimensionedScalar ds(distribution()[sectionI]);
-
-        beta += (Nc*sqr(ds) / (2.0*sqr(db)*stabilise(B,SB)));
-    }
-
-    beta.max(dimensionedScalar(beta.name(), beta.dimensions(), 0.0));
-    beta.min(dimensionedScalar(beta.name(), beta.dimensions(), 1.0));
-
-    const volScalarField F(B*(1.0-beta));
-
-    // Read solver controls
-
-    const dictionary& NControls = mesh_.solution().solverDict("Nsystem");
-
-    const scalar tolerance(readScalar(NControls.lookup("tolerance")));
-
-    const label minIter(NControls.lookupOrDefault<label>("minIter", 0));
-    const label maxIter(NControls.lookupOrDefault<label>("maxIter", 1000));
-
-    const Switch silent(NControls.lookupOrDefault<Switch>("silent", true));
-
-    const fvModels& fvModels(fvModels::New(mesh_));
-    const fvConstraints& fvConstraints
-    (
-        fvConstraints::New(mesh_)
-    );
-
-    forAll(distribution(), sectionI)
-    {
-        volScalarField& Nf = freeParticles_[sectionI].N();
-        volScalarField& Nc = capturedParticles_[sectionI].N();
-
-        const surfaceScalarField& phif = freeParticles_[sectionI].phi();
-        const surfaceScalarField& phic = capturedParticles_[sectionI].phi();
-
-        const volScalarField D(BrownDiff_().D(sectionI) + nut/Sct_);
-
-        const volScalarField Datt(detAttachRate_().rate(sectionI));
-        const volScalarField Satt(stochAttachRate_().rate(sectionI));
-        const volScalarField Batt(BrownAttachRate_().rate(sectionI));
-
-        const volScalarField Sdet(stochDetachRate_().rate(sectionI));
-
-        Pcol_[sectionI] = colEff_().efficiency(sectionI);
-        Patt_[sectionI] = attEff_().efficiency(sectionI);
-        Pstab_[sectionI] = stabEff_().efficiency(sectionI);
-
-        const volScalarField Katt
-        (
-            Batt
-          + (Datt+Satt)
-          * Pcol_[sectionI]*Patt_[sectionI]*Pstab_[sectionI]
-        );
-
-        const volScalarField Kdet
-        (
-            Sdet*(1.0-Pstab_[sectionI])
-        );
-
-        const int levelCache = Info.level;
-
-        scalar r(0.0);
-        scalar r0(0.0);
-
-        label iter;
-
-        for (iter = 0; iter < maxIter; iter++)
+        forAll(particleModels_, i)
         {
-            fvScalarMatrix NfEqn
-            (
-                fvm::ddt(Nf)
-              + fvm::div(phif, Nf, "div(phi,Nf)")
-              ==
-                fvm::laplacian(D,Nf)
-              + fvc::Sp(Kdet, Nc)
-              - fvm::Sp(Katt*F, Nf)
-              + fvModels.source(Nf)
-            );
-
-            fvScalarMatrix NcEqn
-            (
-                fvm::ddt(Nc)
-              + fvm::div(phic, Nc, "div(phi,Nc)")
-              ==
-                fvc::Sp(Katt*F, Nf)
-              - fvm::Sp(Kdet, Nc)
-              + fvModels.source(Nc)
-            );
-
-            NfEqn.relax();
-            NcEqn.relax();
-
-            fvConstraints.constrain(NfEqn);
-            fvConstraints.constrain(NcEqn);
-
-            if (silent)
-            {
-                Info.level = 0;
-            }
-
-            const scalar rf(NfEqn.solve().initialResidual());
-            const scalar rc(NcEqn.solve().initialResidual());
-
-            fvConstraints.constrain(Nf);
-            fvConstraints.constrain(Nc);
-
-            if (silent)
-            {
-                Info.level = levelCache;
-            }
-
-            r = max(rf,rc);
+            List<solverPerformance> perfs(particleModels_[i].solve());
 
             if (iter == 0)
             {
-                r0 = r;
+                forAll(perfs, i)
+                {
+                    r0[i] = max(r0[i], perfs[i].initialResidual());
+                }
             }
 
-            if ((r < tolerance && iter >= minIter-1) || iter >= maxIter-1)
+            if (iter == nCorr_-1)
             {
-                // Store effective fluxes
+                forAll(perfs, i)
+                {
+                    r[i] = max(r[i], perfs[i].finalResidual());
+                }
+            }
 
-                freeParticles_[sectionI].phiN() = NfEqn.flux();
-                capturedParticles_[sectionI].phiN() = NcEqn.flux();
-
-                break;
+            forAll(perfs, i)
+            {
+                iters[i] += perfs[i].nIterations();
             }
         }
+    }
 
-        Info << "flotationSystem: Solving for section " << sectionI+1
-             << ", Initiual residual = " << r0
-             << ", Final residual = " << r
-             << ", No Iterations = " << iter << endl;
+    Info<< typeName << ":" << endl;
+
+    forAll(distribution_(), i)
+    {
+        Info<< "    Solving for section " << i+1
+            << ", Initial residual = " << r0[i]
+            << ", Final residual = " << r[i]
+            << ", No Iterations = " << iters[i]/iter/2
+            << ", No Corrections = " << iter << endl;
     }
 }
-
 
 bool Foam::flotationSystem::read()
 {
@@ -480,7 +129,7 @@ bool Foam::flotationSystem::read()
 }
 
 const Foam::phaseCompressible::momentumTransportModel&
-Foam::flotationSystem::continuousTurbulence() const
+Foam::flotationSystem::firstPhaseTurbulence() const
 {
     return
         mesh_.lookupObject<phaseCompressible::momentumTransportModel>
@@ -488,7 +137,21 @@ Foam::flotationSystem::continuousTurbulence() const
             IOobject::groupName
             (
                 momentumTransportModel::typeName,
-                phasePair().continuous().name()
+                interface().phase1().name()
+            )
+        );
+}
+
+const Foam::phaseCompressible::momentumTransportModel&
+Foam::flotationSystem::secondPhaseTurbulence() const
+{
+    return
+        mesh_.lookupObject<phaseCompressible::momentumTransportModel>
+        (
+            IOobject::groupName
+            (
+                momentumTransportModel::typeName,
+                interface().phase2().name()
             )
         );
 }

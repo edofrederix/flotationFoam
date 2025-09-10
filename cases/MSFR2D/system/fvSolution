@@ -39,15 +39,7 @@ solvers
         minIter         1;
     }
 
-    Nsystem
-    {
-        tolerance       1e-6;
-        silent          true;
-        minIter         1;
-        maxIter         3;
-    }
-
-    "N[fc]\..*"
+    "N\..*"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;

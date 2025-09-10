@@ -18,7 +18,6 @@ namespace fv
 }
 }
 
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::fv::flotation::flotation
@@ -50,12 +49,10 @@ Foam::fv::flotation::flotation
     }
 }
 
-
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::fv::flotation::~flotation()
 {}
-
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
@@ -92,6 +89,5 @@ bool Foam::fv::flotation::read(const dictionary& dict)
         return false;
     }
 }
-
 
 // ************************************************************************* //

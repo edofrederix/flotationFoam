@@ -74,9 +74,12 @@ flotation
 
 to `constant/fvModels`. Parameters are then read from the
 `constant/flotationProperties` file. Finally, your case should provide initial
-and boundary conditions for the `Nf.#` and `Nc.#` fields, which are the free and
-captured number concentration fields for section `#`. See the cases directory
-for a few examples.
+and boundary conditions for the `N.<phase>:<#>` fields for each phase `<phase>`
+of the interface to which the flotation model is applied and for each section
+number `<#>`. One may also specify a general initial and boundary condition file
+that is named `N.<phase>` which is then read for all sections for which no file
+with the name `N.<phase>:<#>` exists. See the cases directory for a few
+examples.
 
 ## Contact & support
 

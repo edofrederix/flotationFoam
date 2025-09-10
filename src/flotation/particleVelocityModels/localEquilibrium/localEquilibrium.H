@@ -33,10 +33,8 @@ public:
         //- Construct from a dictionary and a mesh
         localEquilibrium
         (
-            const dictionary& dict,
-            const fvMesh& mesh,
-            flotationSystem& system,
-            const bool registerObject
+            particleModel& model,
+            const dictionary& dict
         );
 
 
@@ -46,8 +44,8 @@ public:
 
     // Member Functions
 
-        //- Update the particle velocities
-        virtual void update();
+        //- Correct the particle velocities
+        virtual void correct();
 };
 
 

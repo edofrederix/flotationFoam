@@ -17,16 +17,16 @@ VARS="\
     -DVARNF=$NF \
     "
 
-rm -f system/Nfs system/Ncs
+rm -f system/fields
 
 for I in $(seq 1 $NSECTIONS); do
 
     J=$(printf '%02i' $I)
 
-    m4 $VARS -DVARNFNAME=Nf.$J -DVARNFPHI=phif.$J 0/Nf.m4 > 0/Nf.$J
+    m4 $VARS -DVARNFNAME=N.water:$J -DVARNFPHI=phi.water:$J 0/N.water.m4 > 0/N.water:$J
 
-    echo Nf.$J >> system/Nfs
-    echo Nc.$J >> system/Ncs
+    echo N.water:$J >> system/fields
+    echo N.air:$J >> system/fields
 
 done
 

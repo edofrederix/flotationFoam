@@ -1,8 +1,7 @@
 #include "passiveTracer.H"
+#include "particleModel.H"
 #include "flotationSystem.H"
 #include "addToRunTimeSelectionTable.H"
-
-#include "fvcFlux.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -11,40 +10,40 @@ namespace Foam
 namespace particleVelocityModels
 {
     defineTypeNameAndDebug(passiveTracer, 0);
-    addToRunTimeSelectionTable(particleVelocityModel, passiveTracer, dictionary);
+    addToRunTimeSelectionTable
+    (
+        particleVelocityModel,
+        passiveTracer,
+        dictionary
+    );
 }
 }
-
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::particleVelocityModels::passiveTracer::passiveTracer
 (
-    const dictionary& dict,
-    const fvMesh& mesh,
-    flotationSystem& system,
-    const bool registerObject
+    particleModel& model,
+    const dictionary& dict
 )
 :
-    particleVelocityModel(dict, mesh, system, registerObject)
+    particleVelocityModel(model, dict)
 {}
-
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::particleVelocityModels::passiveTracer::~passiveTracer()
 {}
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-void Foam::particleVelocityModels::passiveTracer::update()
+void Foam::particleVelocityModels::passiveTracer::correct()
 {
-    const surfaceScalarField& phi = system_.phasePair().continuous().phi();
+    const surfaceScalarField& phi = model_.phase().phi();
 
-    forAll(system_.freeParticles(), sectionI)
+    forAll(model_, i)
     {
-        system_.freeParticles()[sectionI].phi() = phi;
+        model_[i].phi() = phi;
     }
 }
 

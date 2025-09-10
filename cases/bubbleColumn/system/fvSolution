@@ -38,21 +38,13 @@ solvers
         minIter         1;
     }
 
-    Nsystem
-    {
-        tolerance       1e-6;
-        silent          true;
-        minIter         1;
-        maxIter         3;
-    }
-
-    "N[fc]\..*"
+    "N\..*"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-8;
+        tolerance       1e-6;
         relTol          0;
-        minIter         1;
+        maxIter         100;
     }
 
     "(e|k|epsilon|kappai|lambda)\..*"

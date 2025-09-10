@@ -1,4 +1,5 @@
 #include "particleSection.H"
+#include "particleModel.H"
 #include "flotationSystem.H"
 #include "fvcReconstruct.H"
 
@@ -7,42 +8,47 @@
 Foam::particleSection::particleSection
 (
     const label sectionNum,
-    const flotationSystem& system
+    const particleModel& model
 )
 :
     sectionNum_(sectionNum),
-    system_(system)
-{}
-
+    model_(model)
+{
+    read();
+}
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 Foam::particleSection::~particleSection()
 {}
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::word Foam::particleSection::sectionName() const
 {
-    return system_.distribution().sectionName(sectionNum_);
+    return model_.system().distribution().sectionName(sectionNum_);
 }
 
 void Foam::particleSection::read()
 {
+    const word defaultFieldName =
+        IOobject::groupName("N", model_.phase().name());
+
+    const word fieldName = defaultFieldName + ":" + sectionName();
+
     IOobject fieldHeader
     (
-        IOobject::groupName("N"+particleTypeShort(), sectionName()),
-        system_.mesh().time().time().name(),
-        system_.mesh(),
+        fieldName,
+        model_.system().mesh().time().time().name(),
+        model_.system().mesh(),
         IOobject::NO_READ
     );
 
     IOobject defaultFieldHeader
     (
-        "N"+particleTypeShort(),
-        system_.mesh().time().time().name(),
-        system_.mesh(),
+        defaultFieldName,
+        model_.system().mesh().time().time().name(),
+        model_.system().mesh(),
         IOobject::NO_READ
     );
 
@@ -54,13 +60,13 @@ void Foam::particleSection::read()
             (
                 IOobject
                 (
-                    IOobject::groupName("N"+particleTypeShort(), sectionName()),
-                    system_.mesh().time().time().name(),
-                    system_.mesh(),
+                    fieldName,
+                    model_.system().mesh().time().time().name(),
+                    model_.system().mesh(),
                     IOobject::MUST_READ,
                     IOobject::AUTO_WRITE
                 ),
-                system_.mesh()
+                model_.system().mesh()
             )
         );
     }
@@ -72,13 +78,13 @@ void Foam::particleSection::read()
             (
                 IOobject
                 (
-                    "N"+particleTypeShort(),
-                    system_.mesh().time().time().name(),
-                    system_.mesh(),
+                    defaultFieldName,
+                    model_.system().mesh().time().time().name(),
+                    model_.system().mesh(),
                     IOobject::MUST_READ,
                     IOobject::NO_WRITE
                 ),
-                system_.mesh()
+                model_.system().mesh()
             )
         );
 
@@ -88,9 +94,9 @@ void Foam::particleSection::read()
             (
                 IOobject
                 (
-                    IOobject::groupName("N"+particleTypeShort(), sectionName()),
-                    system_.mesh().time().time().name(),
-                    system_.mesh(),
+                    fieldName,
+                    model_.system().mesh().time().time().name(),
+                    model_.system().mesh(),
                     IOobject::NO_READ,
                     IOobject::AUTO_WRITE
                 ),
@@ -101,13 +107,32 @@ void Foam::particleSection::read()
     else
     {
         FatalErrorInFunction
-            << "Field " << IOobject::groupName("N"+particleTypeShort(), sectionName())
-            << " not found (not the field itself, nor a default field named "
-            << "N"+particleTypeShort() << ")."
+            << "Field " << fieldName << " not found "
+            << "(not the field itself, nor a default field named "
+            << defaultFieldName << ")."
             << abort(FatalError);
     }
 
-    system_.mesh().schemes().setFluxRequired(N_->name());
+    model_.system().mesh().schemes().setFluxRequired(N_->name());
+
+    D_.set
+    (
+        new volScalarField
+        (
+            IOobject
+            (
+                IOobject::groupName("D", model_.phase().name())
+              + ":"
+              + sectionName(),
+                model_.system().mesh().time().time().name(),
+                model_.system().mesh(),
+                IOobject::NO_READ,
+                IOobject::NO_WRITE
+            ),
+            model_.system().mesh(),
+            dimensionedScalar(dimArea/dimTime, 0.0)
+        )
+    );
 
     phi_.set
     (
@@ -115,19 +140,16 @@ void Foam::particleSection::read()
         (
             IOobject
             (
-                IOobject::groupName("phi"+particleTypeShort(), sectionName()),
-                system_.mesh().time().time().name(),
-                system_.mesh(),
+                IOobject::groupName("phi", model_.phase().name())
+              + ":"
+              + sectionName(),
+                model_.system().mesh().time().time().name(),
+                model_.system().mesh(),
                 IOobject::NO_READ,
                 IOobject::NO_WRITE
             ),
-            system_.mesh(),
-            dimensionedScalar
-            (
-                IOobject::groupName("phi"+particleTypeShort(), sectionName()),
-                dimVelocity*dimArea,
-                0.0
-            )
+            model_.system().mesh(),
+            dimensionedScalar(dimVelocity*dimArea, 0.0)
         )
     );
 
@@ -137,19 +159,16 @@ void Foam::particleSection::read()
         (
             IOobject
             (
-                IOobject::groupName("phiN"+particleTypeShort(), sectionName()),
-                system_.mesh().time().time().name(),
-                system_.mesh(),
+                IOobject::groupName("phiN", model_.phase().name())
+              + ":"
+              + sectionName(),
+                model_.system().mesh().time().time().name(),
+                model_.system().mesh(),
                 IOobject::NO_READ,
                 IOobject::NO_WRITE
             ),
-            system_.mesh(),
-            dimensionedScalar
-            (
-                IOobject::groupName("phiN"+particleTypeShort(), sectionName()),
-                dimVelocity*dimArea/dimVolume,
-                0.0
-            )
+            model_.system().mesh(),
+            dimensionedScalar(dimVelocity*dimArea/dimVolume, 0.0)
         )
     );
 }
@@ -157,7 +176,14 @@ void Foam::particleSection::read()
 Foam::tmp<Foam::volVectorField> Foam::particleSection::V() const
 {
     tmp<volVectorField> tV(fvc::reconstruct(phi()));
-    tV->rename(IOobject::groupName("V"+particleTypeShort(), sectionName()));
+
+    tV->rename
+    (
+        IOobject::groupName("V", model_.phase().name())
+      + ":"
+      + sectionName()
+    );
+
     return tV;
 }
 

@@ -11,7 +11,7 @@ namespace Foam
 {
 
 // Forward declarations
-class flotationSystem;
+class particleModel;
 
 /*---------------------------------------------------------------------------*\
                     Class particleVelocityModel Declaration
@@ -25,11 +25,8 @@ protected:
 
     // Protected data
 
-        //- Reference to the mesh
-        const fvMesh& mesh_;
-
         //- Reference to the FPS object
-        flotationSystem& system_;
+        particleModel& model_;
 
         //- Reference to the dictionary
         const dictionary& dict_;
@@ -49,12 +46,10 @@ public:
             particleVelocityModel,
             dictionary,
             (
-                const dictionary& dict,
-                const fvMesh& mesh,
-                flotationSystem& system,
-                const bool registerObject
+                particleModel& model,
+                const dictionary& dict
             ),
-            (dict, mesh, system, registerObject)
+            (model, dict)
         );
 
 
@@ -65,10 +60,8 @@ public:
 
         particleVelocityModel
         (
-            const dictionary& dict,
-            const fvMesh& mesh,
-            flotationSystem& system,
-            const bool registerObject
+            particleModel& model,
+            const dictionary& dict
         );
 
 
@@ -80,9 +73,8 @@ public:
 
         static autoPtr<particleVelocityModel> New
         (
-            const dictionary& dict,
-            const fvMesh& mesh,
-            flotationSystem& system
+            particleModel& model,
+            const dictionary& dict
         );
 
 
@@ -91,8 +83,8 @@ public:
         //- Dummy write for regIOobject
         bool writeData(Ostream& os) const;
 
-        //- Update the particle velocities
-        virtual void update() = 0;
+        //- Correct the particle velocities
+        virtual void correct() = 0;
 };
 
 
