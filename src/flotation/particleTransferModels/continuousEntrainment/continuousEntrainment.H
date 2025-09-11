@@ -45,8 +45,8 @@ public:
 
     // Member Functions
 
-        // Return the source term
-        virtual tmp<fvScalarMatrix> R(volScalarField& N) const;
+        // Transfer coefficient
+        virtual tmp<volScalarField> K(volScalarField& N) const;
 };
 
 

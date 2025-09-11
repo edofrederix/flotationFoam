@@ -1,7 +1,6 @@
 #include "continuousEntrainment.H"
 #include "particleModel.H"
 #include "flotationSystem.H"
-#include "fvmSup.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -38,10 +37,10 @@ continuousEntrainment
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::tmp<Foam::fvScalarMatrix>
-Foam::particleTransferModels::continuousEntrainment::R(volScalarField& N) const
+Foam::tmp<Foam::volScalarField>
+Foam::particleTransferModels::continuousEntrainment::K(volScalarField& N) const
 {
-    return -fvm::Sp(rate_->R(N), N);
+    return rate_->R(N);
 }
 
 // ************************************************************************* //

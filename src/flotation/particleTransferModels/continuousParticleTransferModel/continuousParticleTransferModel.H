@@ -3,6 +3,7 @@
 
 #include "particleTransferModel.H"
 #include "dispersedPhaseInterface.H"
+#include "blendingMethod.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -21,9 +22,14 @@ class continuousParticleTransferModel
 {
 protected:
 
-    //- Dispersed phase interface. The phase of the particle model is considered
-    //  to be the dispersed phase.
-    dispersedPhaseInterface interface_;
+    // Protected Data
+
+        //- Dispersed phase interface. The phase of the particle model is
+        //  considered to be the dispersed phase.
+        dispersedPhaseInterface interface_;
+
+        //- Blending method
+        autoPtr<blendingMethod> blending_;
 
 public:
 
@@ -48,6 +54,12 @@ public:
         {
             return interface_;
         }
+
+        // Transfer coefficient
+        virtual tmp<volScalarField> K(volScalarField& N) const = 0;
+
+        // Return the source term
+        virtual tmp<fvScalarMatrix> R(volScalarField& N) const;
 };
 
 

@@ -3,6 +3,7 @@
 
 #include "particleTransferModel.H"
 #include "dispersedPhaseInterface.H"
+#include "blendingMethod.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -26,6 +27,9 @@ protected:
         //- Dispersed phase interface. The phase of the particle model is
         //  considered to be the continuous phase.
         dispersedPhaseInterface interface_;
+
+        //- Blending method
+        autoPtr<blendingMethod> blending_;
 
 public:
 
