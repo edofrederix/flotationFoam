@@ -22,7 +22,7 @@ rm -f system/particleVelocities
 for I in $(seq 1 $NSECTIONS); do
 
     m4 $VARS -DVARNFNAME=N.water:$I -DVARNFPHI=phi.water:$I 0/N.water.m4 > 0/N.water:$I
-    m4 -DVARI=$((I-1)) -DVARNAME=velocity$((I-1)) \
+    m4 -DVARI=$I -DVARNAME=velocity$I \
         system/particleVelocity.m4 >> system/particleVelocities
 
 done
