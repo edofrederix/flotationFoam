@@ -1,5 +1,5 @@
-#ifndef continuousEntrainmentRate_H
-#define continuousEntrainmentRate_H
+#ifndef continuousTurbulentEntrainmentRate_H
+#define continuousTurbulentEntrainmentRate_H
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -12,35 +12,35 @@ namespace Foam
 namespace particleTransferModels
 {
 
-class continuousEntrainment;
+class continuousTurbulentEntrainment;
 
 /*---------------------------------------------------------------------------*\
-                    Class continuousEntrainmentRate Declaration
+                    Class continuousTurbulentEntrainmentRate Declaration
 \*---------------------------------------------------------------------------*/
 
-class continuousEntrainmentRate
+class continuousTurbulentEntrainmentRate
 {
 protected:
 
     // Protected Data
 
         //- Reference to the continuous entrainment particle transfer model
-        continuousEntrainment& transfer_;
+        continuousTurbulentEntrainment& transfer_;
 
 public:
 
     //- Runtime type information
-    TypeName("continuousEntrainmentRate");
+    TypeName("continuousTurbulentEntrainmentRate");
 
     // Declare runtime construction
 
         declareRunTimeSelectionTable
         (
             autoPtr,
-            continuousEntrainmentRate,
+            continuousTurbulentEntrainmentRate,
             dictionary,
             (
-                continuousEntrainment& transfer,
+                continuousTurbulentEntrainment& transfer,
                 const dictionary& dict
             ),
             (transfer, dict)
@@ -48,23 +48,23 @@ public:
 
     // Constructors
 
-        continuousEntrainmentRate
+        continuousTurbulentEntrainmentRate
         (
-            continuousEntrainment& transfer,
+            continuousTurbulentEntrainment& transfer,
             const dictionary& dict
         );
 
     // Selectors
 
-        static autoPtr<continuousEntrainmentRate> New
+        static autoPtr<continuousTurbulentEntrainmentRate> New
         (
-            continuousEntrainment& transfer,
+            continuousTurbulentEntrainment& transfer,
             const dictionary& dict
         );
 
 
     //- Destructor
-    virtual ~continuousEntrainmentRate();
+    virtual ~continuousTurbulentEntrainmentRate();
 
     // Member Functions
 

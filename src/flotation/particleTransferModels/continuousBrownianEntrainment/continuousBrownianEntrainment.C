@@ -1,4 +1,4 @@
-#include "dispersedBrownianDeposition.H"
+#include "continuousBrownianEntrainment.H"
 #include "particleModel.H"
 #include "flotationSystem.H"
 #include "addToRunTimeSelectionTable.H"
@@ -9,11 +9,11 @@ namespace Foam
 {
 namespace particleTransferModels
 {
-    defineTypeNameAndDebug(dispersedBrownianDeposition, 0);
+    defineTypeNameAndDebug(continuousBrownianEntrainment, 0);
     addToRunTimeSelectionTable
     (
         particleTransferModel,
-        dispersedBrownianDeposition,
+        continuousBrownianEntrainment,
         dictionary
     );
 }
@@ -21,14 +21,14 @@ namespace particleTransferModels
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::particleTransferModels::dispersedBrownianDeposition::
-dispersedBrownianDeposition
+Foam::particleTransferModels::continuousBrownianEntrainment::
+continuousBrownianEntrainment
 (
     const particleModel& model,
     const dictionary& dict
 )
 :
-    dispersedParticleTransferModel(model, dict),
+    continuousParticleTransferModel(model, dict),
     Sh_
     (
         SherwoodNumber::New
@@ -42,7 +42,10 @@ dispersedBrownianDeposition
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::tmp<Foam::volScalarField>
-Foam::particleTransferModels::dispersedBrownianDeposition::K(volScalarField& N)
+Foam::particleTransferModels::continuousBrownianEntrainment::K
+(
+    volScalarField& N
+)
 const
 {
     label i = Foam::flotationSystem::sectionNum(N);
@@ -50,12 +53,14 @@ const
 
     const volScalarField d(interface_.dispersed().d());
     const volScalarField D(model_[i].D());
-    const volScalarField nu(interface_.continuous().fluidThermo().nu());
+    const volScalarField nu(interface_.dispersed().fluidThermo().nu());
 
-    // Reynolds of the flow in the continuous phase induced by the presence of
-    // the dispersed phase
+    // Reynolds number of the flow inside the dispersed phase induced by the
+    // continuous phase. Note that this is not the same as the Reynolds number
+    // of the interface (which would be based on the continuous phase
+    // viscosity).
 
-    const volScalarField Re(interface_.Re());
+    const volScalarField Re(interface_.magUr()*d/nu);
 
     const volScalarField Sc(nu/D);
     const volScalarField Sh(Sh_->Sh(Re,Sc));

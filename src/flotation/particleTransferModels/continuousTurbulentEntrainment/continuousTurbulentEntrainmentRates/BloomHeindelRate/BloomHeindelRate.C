@@ -1,5 +1,5 @@
 #include "BloomHeindelRate.H"
-#include "continuousEntrainment.H"
+#include "continuousTurbulentEntrainment.H"
 #include "particleModel.H"
 #include "flotationSystem.H"
 #include "addToRunTimeSelectionTable.H"
@@ -10,12 +10,12 @@ namespace Foam
 {
 namespace particleTransferModels
 {
-namespace continuousEntrainmentRates
+namespace continuousTurbulentEntrainmentRates
 {
     defineTypeNameAndDebug(BloomHeindelRate, 0);
     addToRunTimeSelectionTable
     (
-        continuousEntrainmentRate,
+        continuousTurbulentEntrainmentRate,
         BloomHeindelRate,
         dictionary
     );
@@ -25,26 +25,26 @@ namespace continuousEntrainmentRates
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::particleTransferModels::continuousEntrainmentRates::BloomHeindelRate::
+Foam::particleTransferModels::continuousTurbulentEntrainmentRates::BloomHeindelRate::
 BloomHeindelRate
 (
-    continuousEntrainment& transfer,
+    continuousTurbulentEntrainment& transfer,
     const dictionary& dict
 )
 :
-    continuousEntrainmentRate(transfer, dict)
+    continuousTurbulentEntrainmentRate(transfer, dict)
 {}
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::particleTransferModels::continuousEntrainmentRates::BloomHeindelRate::
+Foam::particleTransferModels::continuousTurbulentEntrainmentRates::BloomHeindelRate::
 ~BloomHeindelRate()
 {}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::tmp<Foam::volScalarField>
-Foam::particleTransferModels::continuousEntrainmentRates::BloomHeindelRate::R
+Foam::particleTransferModels::continuousTurbulentEntrainmentRates::BloomHeindelRate::R
 (
     const volScalarField& N
 ) const

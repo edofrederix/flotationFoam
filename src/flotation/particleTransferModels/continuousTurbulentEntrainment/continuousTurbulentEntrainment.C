@@ -1,4 +1,4 @@
-#include "continuousEntrainment.H"
+#include "continuousTurbulentEntrainment.H"
 #include "particleModel.H"
 #include "flotationSystem.H"
 #include "addToRunTimeSelectionTable.H"
@@ -9,11 +9,11 @@ namespace Foam
 {
 namespace particleTransferModels
 {
-    defineTypeNameAndDebug(continuousEntrainment, 0);
+    defineTypeNameAndDebug(continuousTurbulentEntrainment, 0);
     addToRunTimeSelectionTable
     (
         particleTransferModel,
-        continuousEntrainment,
+        continuousTurbulentEntrainment,
         dictionary
     );
 }
@@ -21,8 +21,8 @@ namespace particleTransferModels
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::particleTransferModels::continuousEntrainment::
-continuousEntrainment
+Foam::particleTransferModels::continuousTurbulentEntrainment::
+continuousTurbulentEntrainment
 (
     const particleModel& model,
     const dictionary& dict
@@ -31,14 +31,14 @@ continuousEntrainment
     continuousParticleTransferModel(model, dict),
     rate_
     (
-        continuousEntrainmentRate::New(*this, dict).ptr()
+        continuousTurbulentEntrainmentRate::New(*this, dict).ptr()
     )
 {}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 Foam::tmp<Foam::volScalarField>
-Foam::particleTransferModels::continuousEntrainment::K(volScalarField& N) const
+Foam::particleTransferModels::continuousTurbulentEntrainment::K(volScalarField& N) const
 {
     return rate_->R(N);
 }

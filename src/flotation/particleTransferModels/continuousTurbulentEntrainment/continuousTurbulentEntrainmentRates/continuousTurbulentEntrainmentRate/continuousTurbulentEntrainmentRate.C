@@ -1,4 +1,4 @@
-#include "continuousEntrainmentRate.H"
+#include "continuousTurbulentEntrainmentRate.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -6,16 +6,16 @@ namespace Foam
 {
 namespace particleTransferModels
 {
-    defineTypeNameAndDebug(continuousEntrainmentRate, 0);
-    defineRunTimeSelectionTable(continuousEntrainmentRate, dictionary);
+    defineTypeNameAndDebug(continuousTurbulentEntrainmentRate, 0);
+    defineRunTimeSelectionTable(continuousTurbulentEntrainmentRate, dictionary);
 }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::particleTransferModels::continuousEntrainmentRate::continuousEntrainmentRate
+Foam::particleTransferModels::continuousTurbulentEntrainmentRate::continuousTurbulentEntrainmentRate
 (
-    continuousEntrainment& transfer,
+    continuousTurbulentEntrainment& transfer,
     const dictionary& dict
 )
 :
@@ -24,16 +24,16 @@ Foam::particleTransferModels::continuousEntrainmentRate::continuousEntrainmentRa
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::particleTransferModels::continuousEntrainmentRate::
-~continuousEntrainmentRate()
+Foam::particleTransferModels::continuousTurbulentEntrainmentRate::
+~continuousTurbulentEntrainmentRate()
 {}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
-Foam::autoPtr<Foam::particleTransferModels::continuousEntrainmentRate>
-Foam::particleTransferModels::continuousEntrainmentRate::New
+Foam::autoPtr<Foam::particleTransferModels::continuousTurbulentEntrainmentRate>
+Foam::particleTransferModels::continuousTurbulentEntrainmentRate::New
 (
-    continuousEntrainment& transfer,
+    continuousTurbulentEntrainment& transfer,
     const dictionary& dict
 )
 {

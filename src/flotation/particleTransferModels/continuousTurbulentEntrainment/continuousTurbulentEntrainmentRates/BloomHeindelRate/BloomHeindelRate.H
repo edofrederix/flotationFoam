@@ -1,57 +1,57 @@
-#ifndef continuousEntrainment_H
-#define continuousEntrainment_H
+#ifndef BloomHeindelRate_H
+#define BloomHeindelRate_H
 
-#include "continuousParticleTransferModel.H"
-#include "continuousEntrainmentRate.H"
+#include "continuousTurbulentEntrainmentRate.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
+
 namespace particleTransferModels
 {
 
+namespace continuousTurbulentEntrainmentRates
+{
+
 /*---------------------------------------------------------------------------*\
-                     Class continuousEntrainment Declaration
+                        Class BloomHeindelRate Declaration
 \*---------------------------------------------------------------------------*/
 
-class continuousEntrainment
+class BloomHeindelRate
 :
-    public continuousParticleTransferModel
+    public continuousTurbulentEntrainmentRate
 {
-protected:
-
-    //- Continuous entrainment rate model
-    autoPtr<continuousEntrainmentRate> rate_;
-
 public:
 
     //- Runtime type information
-    TypeName("continuousEntrainment");
+    TypeName("BloomHeindel");
+
 
     // Constructors
 
-        continuousEntrainment
+        //- Construct from a dictionary and a mesh
+        BloomHeindelRate
         (
-            const particleModel& model,
+            continuousTurbulentEntrainment& transfer,
             const dictionary& dict
         );
 
 
     //- Destructor
-    virtual ~continuousEntrainment()
-    {}
+    virtual ~BloomHeindelRate();
 
 
     // Member Functions
 
-        // Transfer coefficient
-        virtual tmp<volScalarField> K(volScalarField& N) const;
+        //- Deposition rate for given section in [m^3/s]
+        virtual tmp<volScalarField> R(const volScalarField& N) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace continuousTurbulentEntrainmentRates
 } // End namespace particleTransferModels
 } // End namespace Foam
 
