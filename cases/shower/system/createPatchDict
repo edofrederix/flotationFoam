@@ -1,0 +1,29 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+
+patches
+{
+    inlet
+    {
+        constructFrom zone;
+
+        patchInfo
+        {
+            type    patch;
+        }
+
+        zone
+        {
+            type        cylinder;
+            zoneType    face;
+
+            point1      (0 0 2.9999);
+            point2      (0 0 3.0001);
+            radius      0.05;
+        }
+    }
+}

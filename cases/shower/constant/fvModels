@@ -1,0 +1,36 @@
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      fvModels;
+}
+
+/*
+flotation
+{
+    type            flotation;
+}
+*/
+
+phaseTurbulenceStabilisationGas
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libmultiphaseEulerFvModels.so");
+
+    phase   gas;
+
+    alphaInversion  0.1;
+}
+
+phaseTurbulenceStabilisationSalt
+{
+    type    phaseTurbulenceStabilisation;
+
+    libs    ("libmultiphaseEulerFvModels.so");
+
+    phase   salt;
+
+    alphaInversion  0.1;
+}

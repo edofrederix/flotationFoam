@@ -1,0 +1,129 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      momentumTransfer;
+}
+
+drag
+{
+    gas_dispersedIn_salt
+    {
+//        type            LogMoM;
+//        mode            quadrature;
+//        GaussHermite    3;
+
+//        drag
+//        {
+            type            SchillerNaumann;
+            residualRe      1e-3;
+            swarmCorrection
+            {
+                type        none;
+            }
+//        }
+    }
+
+    salt_dispersedIn_gas
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    gas_segregatedWith_salt
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+}
+
+
+virtualMass
+{
+    gas_dispersedIn_salt
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    salt_dispersedIn_gas
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+}
+
+turbulentDispersion
+{
+    gas_dispersedIn_salt
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+
+    salt_dispersedIn_gas
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+}
+
+lift
+{
+    gas_dispersedIn_salt
+    {
+//        type            LogMoM;
+//        mode            quadrature;
+//        GaussHermite    3;
+
+//        lift
+//        {
+            type    Tomiyama;
+
+            aspectRatio
+            {
+                type    Wellek;
+            }
+//        }
+
+        wallDamping
+        {
+            type            cosine;
+            Cd              1.0;
+            zeroWallDist    0;
+        }
+    }
+
+    salt_dispersedIn_gas
+    {
+        type none;
+    }
+}
+
+wallLubrication
+{
+    gas_dispersedIn_salt
+    {
+        type    Antal;
+        Cw1     -0.01;
+        Cw2     0.05;
+    }
+
+    salt_dispersedIn_gas
+    {
+        type    none;
+    }
+}

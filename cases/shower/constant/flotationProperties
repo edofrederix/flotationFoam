@@ -1,0 +1,74 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      flotationParticleProperties;
+}
+
+rho         1E4;
+interface   salt_gas;
+
+distribution
+{
+    type        sectionalList;
+    diameters   (1e-9 1e-8 1e-7 1e-6 1e-5 1e-4);
+}
+
+particles_in_gas
+{
+    Sct     1.0;
+    silent  false;
+
+    velocity
+    {
+        type    passiveTracer;
+    }
+
+    diffusivity
+    {
+        type    constant;
+        D       0;
+    }
+
+    models
+    ();
+}
+
+particles_in_salt
+{
+    Sct     1.0;
+    silent  false;
+
+    velocity
+    {
+        type        localEquilibrium;
+        steadyState true;
+    }
+
+    diffusivity
+    {
+        type    StokesEinstein;
+    }
+
+    models
+    (
+        dispersedInterception
+        {
+            type    YoonLuttrellIntermediate;
+
+            inductionTime
+            {
+                type    Dai;
+                A       0.2;
+                B       0.6;
+            }
+        }
+
+        dispersedBrownianDeposition
+        {
+            Sh  RanzMarshall;
+        }
+    );
+}

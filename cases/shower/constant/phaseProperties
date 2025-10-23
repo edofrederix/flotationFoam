@@ -1,0 +1,94 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      phaseProperties;
+}
+
+phases (gas salt);
+
+gas
+{
+    type            pureIsothermalPhaseModel;
+
+    diameterModel   constant;
+
+    constantCoeffs
+    {
+        d   1e-3;
+    }
+
+    residualAlpha   1e-6;
+}
+
+salt
+{
+    type            pureIsothermalPhaseModel;
+
+    diameterModel   LogMoM;
+
+    LogMoMCoeffs
+    {
+        dMax            1e-2;
+        dMin            1e-6;
+
+        continuousPhase gas;
+
+        sources
+        ();
+    }
+
+    residualAlpha   1e-6;
+}
+
+blending
+{
+    default
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.3;
+        minFullyContinuousAlpha.salt 0.7;
+        minPartlyContinuousAlpha.salt 0.3;
+    }
+
+    drag
+    {
+        type            linear;
+        minFullyContinuousAlpha.gas 0.7;
+        minPartlyContinuousAlpha.gas 0.5;
+        minFullyContinuousAlpha.salt 0.7;
+        minPartlyContinuousAlpha.salt 0.5;
+    }
+}
+
+surfaceTension
+{
+    gas_salt
+    {
+        type    constant;
+        sigma   0.06;
+    }
+}
+
+aspectRatio
+{
+    gas_dispersedIn_salt
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    salt_dispersedIn_gas
+    {
+        type            constant;
+        E0              1.0;
+    }
+}
+
+interfaceCompression
+{
+    gas_salt   1;
+}
