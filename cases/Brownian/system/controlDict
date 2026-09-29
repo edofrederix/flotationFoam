@@ -1,17 +1,21 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
     object      controlDict;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     foamRun;
+application     reactingMultiphaseEulerFoam;
 
-solver          multiphaseEuler;
-
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
@@ -31,7 +35,7 @@ writeFormat     binary;
 
 writePrecision  6;
 
-writeCompression uncompressed;
+writeCompression off;
 
 timeFormat      general;
 
@@ -47,32 +51,8 @@ maxDeltaT       1;
 
 libs
 (
-    // From the LogMoM repository
-    "libLogMoM.so"
-
-    // From the flotationFoam repository
     "libflotation.so"
 );
 
-functions
-{
-    N
-    {
-        type            volFieldValue;
-        libs            ("libfieldFunctionObjects.so");
 
-        cellZone        all;
-
-        writeControl    timeStep;
-        log             no;
-        writeFields     no;
-
-        operation       volIntegrate;
-
-        fields
-        (
-            #include "fields"
-        );
-    }
-}
-
+// ************************************************************************* //

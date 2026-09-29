@@ -19,8 +19,11 @@ boundaryField
     }
     outlet
     {
-        type            prghPressure;
-        p               $internalField;
+        type            prghTotalPressure;
+        p0              $internalField;
+        U               U.nitrogen;
+        phi             phi.nitrogen;
+        rho             thermo:rho.nitrogen;
         value           $internalField;
     }
     walls

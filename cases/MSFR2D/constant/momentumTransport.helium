@@ -1,9 +1,0 @@
-FoamFile
-{
-    format      ascii;
-    class       dictionary;
-    location    "constant";
-    object      momentumTransport.helium;
-}
-
-simulationType  laminar;

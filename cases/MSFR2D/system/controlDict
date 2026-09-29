@@ -1,17 +1,21 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
     object      controlDict;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     foamRun;
+application     reactingMultiphaseEulerFoam;
 
-solver          multiphaseEuler;
-
-startFrom       latestTime;
+startFrom       startTime;
 
 startTime       0;
 
@@ -31,7 +35,7 @@ writeFormat     binary;
 
 writePrecision  8;
 
-writeCompression uncompressed;
+writeCompression off;
 
 timeFormat      general;
 
@@ -47,31 +51,15 @@ maxDeltaT       1;
 
 libs
 (
-    "libLogMoM.so"
     "libflotation.so"
-    "libfieldFunctionObjects.so"
 );
 
 functions
 {
-    vesselMeanMoments
-    {
-        type            volFieldValue;
-
-        cellZone        vessel;
-
-        log             no;
-        writeFields     no;
-
-        operation       volAverage;
-        weightField     alpha.helium;
-
-        fields          (lambda.helium kappai.helium);
-    }
-
     vesselMeanVoidFraction
     {
         type            volFieldValue;
+        libs            (fieldFunctionObjects);
 
         cellZone        vessel;
 
@@ -83,3 +71,6 @@ functions
         fields          (alpha.helium);
     }
 }
+
+
+// ************************************************************************* //

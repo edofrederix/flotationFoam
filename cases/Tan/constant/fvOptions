@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+flotation
+{
+    type    flotationSource;
+}
+
+phaseTurbulenceStabilisationNitrogen
+{
+    type    phaseTurbulenceStabilisation;
+
+    phase   nitrogen;
+
+    alphaInversion  0.1;
+}
+
+phaseTurbulenceStabilisationWater
+{
+    type    phaseTurbulenceStabilisation;
+
+    phase   water;
+
+    alphaInversion  0.1;
+}
+
+
+// ************************************************************************* //

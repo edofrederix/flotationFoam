@@ -1,32 +1,26 @@
 FoamFile
 {
+    version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
     object      setFieldsDict;
 }
 
-defaultValues
-{
-    alpha.nitrogen  0.99;
-    alpha.water     0.01;
-}
+defaultFieldValues
+(
+    volScalarFieldValue alpha.nitrogen 0.99
+    volScalarFieldValue alpha.water    0.01
+);
 
-zones
-{
-    water
+regions
+(
+    boxToCell
     {
-        type        box;
-        zoneType    cell;
-
-        box         (-1 -1 -1) (1 1 VARHL);
-
-        values
-        {
-            alpha.nitrogen  0.01;
-            alpha.water     0.99;
-
-            #include "NfFieldValues"
-        }
+        box (-1 -1 -1) (1 1 VARHL);
+        fieldValues
+        (
+            volScalarFieldValue alpha.nitrogen 0.01
+            volScalarFieldValue alpha.water    0.99
+        );
     }
-}
+);

@@ -1,20 +1,26 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
     object      phaseProperties;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-phases (gas salt);
+type            basicMultiphaseSystem;
+
+phases          (gas salt);
 
 gas
 {
     type            pureIsothermalPhaseModel;
-
     diameterModel   constant;
-
     constantCoeffs
     {
         d   1e-3;
@@ -26,18 +32,10 @@ gas
 salt
 {
     type            pureIsothermalPhaseModel;
-
-    diameterModel   LogMoM;
-
-    LogMoMCoeffs
+    diameterModel   constant;
+    constantCoeffs
     {
-        dMax            1e-2;
-        dMin            1e-6;
-
-        continuousPhase gas;
-
-        sources
-        ();
+        d               1e-2;
     }
 
     residualAlpha   1e-6;
@@ -53,7 +51,6 @@ blending
         minFullyContinuousAlpha.salt 0.7;
         minPartlyContinuousAlpha.salt 0.3;
     }
-
     drag
     {
         type            linear;
@@ -65,30 +62,152 @@ blending
 }
 
 surfaceTension
-{
-    gas_salt
+(
+    (gas and salt)
     {
         type    constant;
         sigma   0.06;
     }
-}
-
-aspectRatio
-{
-    gas_dispersedIn_salt
-    {
-        type            constant;
-        E0              1.0;
-    }
-
-    salt_dispersedIn_gas
-    {
-        type            constant;
-        E0              1.0;
-    }
-}
+);
 
 interfaceCompression
-{
-    gas_salt   1;
-}
+(
+    (gas and salt)
+    {
+        type    isotropic;
+        cAlpha  1;
+    }
+);
+
+aspectRatio
+(
+    (gas in salt)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (salt in gas)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (gas in salt)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (salt in gas)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (gas and salt)
+    {
+        type            segregated;
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+    (gas in salt)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    (salt in gas)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+heatTransfer
+();
+
+phaseTransfer
+();
+
+lift
+(
+    (gas in salt)
+    {
+        type            wallDamped;
+
+        lift
+        {
+            type    Tomiyama;
+        }
+
+        wallDamping
+        {
+            type            cosine;
+            Cd              1.0;
+            zeroWallDist    0;
+        }
+    }
+
+    (salt in gas)
+    {
+        type            none;
+    }
+);
+
+wallLubrication
+(
+    (gas in salt)
+    {
+        type    Antal;
+        Cw1     -0.01;
+        Cw2     0.05;
+    }
+
+    (salt in gas)
+    {
+        type    none;
+    }
+);
+
+turbulentDispersion
+(
+    (gas in salt)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+
+    (salt in gas)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+);
+
+// Minimum allowable pressure
+pMin            100;
+
+
+// ************************************************************************* //

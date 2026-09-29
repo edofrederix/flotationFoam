@@ -1,0 +1,58 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Kept disabled, matching the OF-13 source: this case doesn't exercise
+// flotation's N-transport, just gas/salt spray dynamics.
+//flotation
+//{
+//    type    flotationSource;
+//}
+
+phaseTurbulenceStabilisationGas
+{
+    type    phaseTurbulenceStabilisation;
+
+    phase   gas;
+
+    alphaInversion  0.1;
+}
+
+phaseTurbulenceStabilisationSalt
+{
+    type    phaseTurbulenceStabilisation;
+
+    phase   salt;
+
+    alphaInversion  0.1;
+}
+
+limitUWater
+{
+    type        limitVelocity;
+    max         15.0;
+    cellZone    all;
+    field       U.salt;
+}
+
+limitUAir
+{
+    type        limitVelocity;
+    max         15.0;
+    cellZone    all;
+    field       U.gas;
+}
+
+
+// ************************************************************************* //

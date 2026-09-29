@@ -1,11 +1,18 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "system";
     object      fvSchemes;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 ddtSchemes
 {
@@ -22,24 +29,23 @@ divSchemes
 {
     default                         none;
 
-    "div\(phi.*,alpha.*\)"          Gauss vanLeer;
-    "div\(alphaPhi.*,f.*\)"         Gauss vanLeer;
+    div(phi,alpha.air)              Gauss vanLeer;
+    div(phi,alpha.water)            Gauss vanLeer;
+    div(phir,alpha.water,alpha.air) Gauss vanLeer;
+    div(phir,alpha.air,alpha.water) Gauss vanLeer;
 
-    div(phi,N)                      Gauss vanLeer;
+    "div\(phi,N\)"                  Gauss vanLeer;
+    "div\(phi\.air,alpha\.air\)"    Gauss vanLeer;
 
-    div(phi,U)                      Gauss linearUpwind limited;
-    div(alphaRhoPhi,U)              Gauss linearUpwind limited;
+    "div\(alphaRhoPhi.*,U.*\)"      Gauss linearUpwind limited;
+    "div\(phi.*,U.*\)"              Gauss linearUpwind limited;
 
-    "div\(alphaRhoPhi,(h|e)\)"      Gauss limitedLinear 1;
-    div(alphaRhoPhi,K)              Gauss limitedLinear 1;
-    div(alphaRhoPhi,(p|rho))        Gauss limitedLinear 1;
+    "div\(alphaRhoPhi.*,(h|e).*\)"  Gauss limitedLinear 1;
+    "div\(alphaRhoPhi.*,K.*\)"      Gauss limitedLinear 1;
+    "div\(alphaPhi.*,p\)"           Gauss limitedLinear 1;
+    "div\(alphaRhoPhi.*,(k|epsilon).*\)" Gauss limitedLinear 1;
 
-    "div\(alphaRhoPhi,(k|epsilon|omega)\)"
-                                    Gauss limitedLinear 1;
-
-    "div\(phim,(km|epsilonm)\)"     Gauss limitedLinear 1;
-
-    div((((alpha*rho)*nuEff)*dev2(T(grad(U))))) Gauss linear;
+    "div\(\(\(\(alpha.*\*thermo:rho.*\)*nuEff.*\)\*dev2\(T\(grad\(U.*\)\)\)\)\)" Gauss linear;
 }
 
 laplacianSchemes
@@ -62,3 +68,6 @@ wallDist
     method          Poisson;
     nRequired       true;
 }
+
+
+// ************************************************************************* //

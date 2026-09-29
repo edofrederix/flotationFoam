@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source $FOAM_SRC/../bin/tools/RunFunctions
-source $FOAM_SRC/../bin/tools/CleanFunctions
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 
 # Width of the inlet size distribution
 
@@ -42,7 +41,7 @@ fi
 
 tar xzf mesh.tar.gz -C constant/
 
-runApplication createZones
+runApplication topoSet
 runApplication createPatch
 
 # Create mapped inlet BC
@@ -64,16 +63,16 @@ VARS="\
     -DVARMASSFLOWRATEQ=$MASSFLOWRATEQ \
     "
 
-m4 $VARS 0/lambda.helium.m4 > 0/lambda.helium
-m4 $VARS 0/kappai.helium.m4 > 0/kappai.helium
-
 m4 $VARS 0/U.helium.m4 > 0/U.helium
 
 rm -f 0/*.m4
 
-runApplication setLogNormal helium $SIGMA $DSM
+# helium/salt start at uniform alpha (see 0.org); real particle
+# transport isn't exercised by this case, so no setLogNormal step
 
-tar xzf heatSourceData.tar.gz
-runApplication mapFields -sourceTime 0 heatSourceData
+if [ -f heatSourceData.tar.gz ]; then
+    tar xzf heatSourceData.tar.gz
+    runApplication mapFields -sourceTime 0 heatSourceData
+fi
 
 runApplication decomposePar

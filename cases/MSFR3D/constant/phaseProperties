@@ -1,31 +1,29 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
     object      phaseProperties;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-phases (helium salt);
+type            basicMultiphaseSystem;
+
+phases          (helium salt);
 
 helium
 {
     type            purePhaseModel;
-
-    diameterModel   LogMoM;
-
-    LogMoMCoeffs
+    diameterModel   constant;
+    constantCoeffs
     {
-        dMax            1e-2;
-        dMin            1e-6;
-
-        continuousPhase salt;
-
-        sources
-        (
-
-        );
+        d               1e-3;
     }
 
     residualAlpha   1e-6;
@@ -34,9 +32,7 @@ helium
 salt
 {
     type            purePhaseModel;
-
     diameterModel   constant;
-
     constantCoeffs
     {
         d               1e-4;
@@ -55,7 +51,6 @@ blending
         minFullyContinuousAlpha.salt 0.7;
         minPartlyContinuousAlpha.salt 0.3;
     }
-
     drag
     {
         type            linear;
@@ -67,13 +62,96 @@ blending
 }
 
 surfaceTension
-{
-    helium_salt
+(
+    (helium and salt)
     {
-        type    constant;
-        sigma   0.07;
+        type            constant;
+        sigma           0.07;
     }
-}
+);
+
+interfaceCompression
+();
 
 aspectRatio
-{}
+();
+
+drag
+(
+    (helium in salt)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+    }
+
+    (salt in helium)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+    }
+
+    (helium and salt)
+    {
+        type            segregated;
+
+        m               0.5;
+        n               8;
+    }
+);
+
+virtualMass
+(
+    (helium in salt)
+    {
+        type    constantCoefficient;
+        Cvm     0.5;
+    }
+
+    (salt in helium)
+    {
+        type    none;
+    }
+);
+
+heatTransfer
+(
+    (helium in salt)
+    {
+        type    RanzMarshall;
+    }
+
+    (salt in helium)
+    {
+        type    spherical;
+    }
+);
+
+phaseTransfer
+();
+
+lift
+();
+
+wallLubrication
+();
+
+turbulentDispersion
+(
+    (helium in salt)
+    {
+        type            LopezDeBertodano;
+        Ctd             1.0;
+        residualAlpha   1e-3;
+    }
+
+    (salt in helium)
+    {
+        type    none;
+    }
+);
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //

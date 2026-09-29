@@ -1,29 +1,29 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
     object      phaseProperties;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-phases (air water);
+type            basicMultiphaseSystem;
+
+phases          (air water);
 
 air
 {
     type            pureIsothermalPhaseModel;
-
-    diameterModel   LogMoM;
-
-    LogMoMCoeffs
+    diameterModel   constant;
+    constantCoeffs
     {
-        dMax            1e-1;
-        dMin            1e-6;
-
-        continuousPhase water;
-
-        sources
-        ();
+        d               1e-4;
     }
 
     residualAlpha   1e-6;
@@ -32,9 +32,7 @@ air
 water
 {
     type            pureIsothermalPhaseModel;
-
     diameterModel   constant;
-
     constantCoeffs
     {
         d               1e-4;
@@ -53,19 +51,78 @@ blending
 }
 
 surfaceTension
-{
-    air_water
+(
+    (air and water)
     {
         type    constant;
         sigma   0.07;
     }
-}
+);
+
+interfaceCompression
+();
 
 aspectRatio
-{
-    air_dispersedIn_water
+(
+    (air in water)
     {
         type            constant;
         E0              1.0;
     }
-}
+);
+
+drag
+(
+    (air in water)
+    {
+        type            TomiyamaCorrelated;
+
+        A               24.0;
+
+        residualRe      1e-3;
+        residualEo      1e-6;
+
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+    (air in water)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+heatTransfer
+();
+
+phaseTransfer
+();
+
+lift
+();
+
+wallLubrication
+();
+
+turbulentDispersion
+(
+    (air in water)
+    {
+        type                Burns;
+        sigma               0.7;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+);
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //

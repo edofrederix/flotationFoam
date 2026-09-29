@@ -1,42 +1,29 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "constant";
     object      phaseProperties;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-phases (nitrogen water);
+type            basicMultiphaseSystem;
+
+phases          (nitrogen water);
 
 nitrogen
 {
     type            pureIsothermalPhaseModel;
-
-    diameterModel   LogMoM;
-
-    LogMoMCoeffs
+    diameterModel   constant;
+    constantCoeffs
     {
-        dMax            2e-2;
-        dMin            1e-6;
-
-        continuousPhase water;
-
-        sources
-        (
-            coalescence
-            {
-                type            LehrMilliesMewes;
-                GaussHermite    3;
-            }
-
-            breakup
-            {
-                type            LehrMilliesMewes;
-                GaussHermite    3;
-                GaussLegendre   5;
-            }
-        );
+        d               1e-3;
     }
 
     residualAlpha   1e-6;
@@ -45,9 +32,7 @@ nitrogen
 water
 {
     type            pureIsothermalPhaseModel;
-
     diameterModel   constant;
-
     constantCoeffs
     {
         d               1e-4;
@@ -66,7 +51,6 @@ blending
         minFullyContinuousAlpha.water 0.7;
         minPartlyContinuousAlpha.water 0.3;
     }
-
     drag
     {
         type            linear;
@@ -78,28 +62,146 @@ blending
 }
 
 surfaceTension
-{
-    nitrogen_water
-    {
-        type    constant;
-        sigma   0.06;
-    }
-}
-
-aspectRatio
-{
-    nitrogen_dispersedIn_water
+(
+    (nitrogen and water)
     {
         type            constant;
-        E0              1.0;
+        sigma           0.06;
     }
-
-    water_dispersedIn_nitrogen
-    {
-        type            constant;
-        E0              1.0;
-    }
-}
+);
 
 interfaceCompression
-{}
+();
+
+aspectRatio
+(
+    (nitrogen in water)
+    {
+        type            constant;
+        E0              1.0;
+    }
+
+    (water in nitrogen)
+    {
+        type            constant;
+        E0              1.0;
+    }
+);
+
+drag
+(
+    (nitrogen in water)
+    {
+        type            SchillerNaumann;
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (water in nitrogen)
+    {
+        type            SchillerNaumann;
+
+        residualRe      1e-3;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+
+    (nitrogen and water)
+    {
+        type            segregated;
+
+        m               0.5;
+        n               8;
+        swarmCorrection
+        {
+            type        none;
+        }
+    }
+);
+
+virtualMass
+(
+    (nitrogen in water)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+
+    (water in nitrogen)
+    {
+        type            constantCoefficient;
+        Cvm             0.5;
+    }
+);
+
+heatTransfer
+();
+
+phaseTransfer
+();
+
+lift
+(
+    (nitrogen in water)
+    {
+        type            wallDamped;
+
+        lift
+        {
+            type    Tomiyama;
+        }
+
+        wallDamping
+        {
+            type            cosine;
+            Cd              1.0;
+            zeroWallDist    0;
+        }
+    }
+
+    (water in nitrogen)
+    {
+        type            none;
+    }
+);
+
+wallLubrication
+(
+    (nitrogen in water)
+    {
+        type    none;
+    }
+
+    (water in nitrogen)
+    {
+        type    none;
+    }
+);
+
+turbulentDispersion
+(
+    (nitrogen in water)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+
+    (water in nitrogen)
+    {
+        type                LopezDeBertodano;
+        Ctd                 1.0;
+        residualAlpha       1e-3;
+    }
+);
+
+// Minimum allowable pressure
+pMin            10000;
+
+
+// ************************************************************************* //

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source $FOAM_SRC/../bin/tools/RunFunctions
-source $FOAM_SRC/../bin/tools/CleanFunctions
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 
 MESH=${1:-32}       # Number of cells per unit length (defaults to 32)
 
@@ -20,9 +19,6 @@ SLOPE_CONE=45.0     # Slope of the cone [deg]
 SLOPE_FLOOR=15.0    # Slope of the floor [deg]
 
 ASPECT_RATIO=3      # Cell aspect ratio [-]
-
-DSM=1e-3            # Inlet/initial Sauter mean diameter [m]
-SIGMA=0.5           # Inlet/initial size distribution width [-]
 
 ##
 
@@ -80,14 +76,8 @@ m4  -DVARR=$R -DVARRC=$RC -DVARRV=$RV \
 cp -r 0.org 0
 
 runApplication blockMesh
+runApplication topoSet
 runApplication createPatch
 
 wmake -s makeCones
 runApplication ./makeCones/makeCones $RC $R $SLOPE_CONE $SLOPE_FLOOR $HC $HI $HS
-
-m4 -DVARDSM=$DSM -DVARSIGMA=$SIGMA 0/lambda.salt.m4 > 0/lambda.salt
-m4 -DVARDSM=$DSM -DVARSIGMA=$SIGMA 0/kappai.salt.m4 > 0/kappai.salt
-
-rm -f 0/*.m4
-
-runApplication setLogNormal salt $SIGMA $DSM

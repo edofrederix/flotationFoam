@@ -1,0 +1,106 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+heatSource
+{
+    type        coded;
+    cellZone    all;
+    fields      (e.salt);
+
+    codeAddSup
+    #{
+        if (!mesh_.foundObject<volScalarField>("promptHeatSource"))
+        {
+            // Read prompt and decay heat sources from the 0 directory
+
+            volScalarField* prompt
+            (
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        "promptHeatSource",
+                        "0",
+                        mesh_,
+                        IOobject::MUST_READ,
+                        IOobject::AUTO_WRITE
+                    ),
+                    mesh_
+                )
+            );
+
+            volScalarField* decay
+            (
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        "decayHeatSource",
+                        "0",
+                        mesh_,
+                        IOobject::MUST_READ,
+                        IOobject::AUTO_WRITE
+                    ),
+                    mesh_
+                )
+            );
+
+            // Store them
+
+            mesh_.objectRegistry::store(prompt);
+            mesh_.objectRegistry::store(decay);
+        }
+
+        volScalarField& prompt =
+            mesh_.lookupObjectRef<volScalarField>("promptHeatSource");
+
+        volScalarField& decay =
+            mesh_.lookupObjectRef<volScalarField>("decayHeatSource");
+
+        // Add to source
+
+        scalarField& heSource = eqn.source();
+        const scalarField& V = mesh_.V();
+
+        heSource -= (prompt.primitiveField() + decay.primitiveField())*V;
+    #};
+}
+
+limitHeliumT
+{
+    type        limitTemperature;
+
+    cellZone    all;
+
+    min         923;
+    max         1060;
+
+    phase       helium;
+}
+
+limitSaltT
+{
+    type        limitTemperature;
+
+    cellZone    all;
+
+    min         923;
+    max         1060;
+
+    phase       salt;
+}
+
+
+// ************************************************************************* //

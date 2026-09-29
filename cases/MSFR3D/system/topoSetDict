@@ -1,0 +1,79 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+
+actions
+(
+    {
+        name        vessel;
+        type        cellZoneSet;
+        action      new;
+        source      cylinderToCell;
+        point1      (0 0 -10);
+        point2      (0 0 10);
+        radius      1.41098;
+    }
+
+    {
+        name        bubblesAll;
+        type        faceSet;
+        action      new;
+        source      cylinderToFace;
+        point1      (1.17343844 0.23341142 -1.1);
+        point2      (1.17343844 0.23341142 -1.0);
+        radius      0.05;
+    }
+    {
+        name        bubblesAll;
+        type        faceSet;
+        action      add;
+        source      cylinderToFace;
+        point1      (0.99479308 0.66469948 -1.1);
+        point2      (0.99479308 0.66469948 -1.0);
+        radius      0.05;
+    }
+    {
+        name        bubblesAll;
+        type        faceSet;
+        action      add;
+        source      cylinderToFace;
+        point1      (0.66469948 0.99479308 -1.1);
+        point2      (0.66469948 0.99479308 -1.0);
+        radius      0.05;
+    }
+    {
+        name        bubblesAll;
+        type        faceSet;
+        action      add;
+        source      cylinderToFace;
+        point1      (0.23341142 1.17343844 -1.1);
+        point2      (0.23341142 1.17343844 -1.0);
+        radius      0.05;
+    }
+
+    {
+        name        bubbles;
+        type        faceSet;
+        action      new;
+        source      patchToFace;
+        patch       w_core;
+    }
+    {
+        name        bubbles;
+        type        faceSet;
+        action      subset;
+        source      faceToFace;
+        set         bubblesAll;
+    }
+    {
+        name        bubbles;
+        type        faceZoneSet;
+        action      new;
+        source      setToFaceZone;
+        faceSet     bubbles;
+    }
+);
