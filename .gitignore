@@ -33,7 +33,3 @@ lnInclude
 
 # Xcode
 *.xcworkspace
-
-# VSCode
-
-.vscode
