@@ -9,14 +9,6 @@
 #include "particleTransferModel.H"
 #include "particleDiffusivityModel.H"
 
-// #include "collisionEfficiencyModel.H"
-// #include "attachmentEfficiencyModel.H"
-// #include "stabilizationEfficiencyModel.H"
-// #include "deterministicAttachmentModel.H"
-// #include "stochasticAttachmentModel.H"
-// #include "BrownianAttachmentModel.H"
-// #include "stochasticDetachmentModel.H"
-
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam

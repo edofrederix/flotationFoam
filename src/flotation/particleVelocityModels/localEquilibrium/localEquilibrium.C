@@ -64,12 +64,15 @@ void Foam::particleVelocityModels::localEquilibrium::correct()
     const scalar steadyState =
         dict_.lookupOrDefault<Switch>("steadyState", false);
 
+    const dimensionedScalar deltaT =
+        model_.system().mesh().time().deltaT();
+
     forAll(model_, i)
     {
         const dimensionedScalar dp(model_.system().distribution()[i]);
 
         const surfaceScalarField tau(rhop/rho*sqr(dp)/(18.0*nu));
-        const surfaceScalarField ddt(fvc::ddt(phi));
+        const surfaceScalarField ddt((phi - phi.oldTime())/deltaT);
 
         model_[i].phi() =
             phi + ((1.0 - rho/rhop)*gAf - (1.0 - steadyState)*ddt)*tau;

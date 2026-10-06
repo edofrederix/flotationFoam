@@ -16,13 +16,13 @@ FlotationFoam is published under the GNU GPL Version 3 license.
 
 ## Prerequisites
 
-* OpenFOAM-13 Foundation version. While it may compile against other versions,
+* OpenFOAM-14 Foundation version. While it may compile against other versions,
   this is not tested and currently not supported.
 * LogMoM: https://github.com/edofrederix/LogMoM
 
 ## Usage
 
-* Make sure that OpenFOAM-13 is loaded into your environment
+* Make sure that OpenFOAM-14 is loaded into your environment
 * Download and compile the LogMoM library. The LogMoM library can be found at
   https://github.com/edofrederix/LogMoM
 * Compile flotationFoam with
@@ -85,7 +85,7 @@ examples.
 
 For bug reports or support, feel free to contact Edo Frederix at
 frederix@nrg.eu. Please note that this code is not maintained nor regularly
-updated, and is only tested with OpenFOAM-13. Questions related to other
+updated, and is only tested with OpenFOAM-14. Questions related to other
 versions will thus not be answered.
 
 ## Disclaimer

@@ -62,7 +62,7 @@ done
 m4 $VARS 0/kappai.nitrogen.m4 > 0/kappai.nitrogen
 m4 $VARS 0/lambda.nitrogen.m4 > 0/lambda.nitrogen
 
-rm -f *.m4
+rm -f 0/*.m4
 
 runApplication blockMesh
 

@@ -72,7 +72,7 @@ Foam::functionObjects::particleVelocity::particleVelocity
     const dictionary& dict
 )
 :
-    fieldExpression(name, runTime, dict, "V"),
+    fieldExpression(name, runTime, dict, typeName, noFieldName_),
     systemPtr_(nullptr),
     sectionNum_(readLabel(dict.lookup("section"))-1),
     dictName_(dict.lookupOrDefault<word>("dict", "flotationProperties")),
